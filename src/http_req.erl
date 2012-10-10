@@ -1,3 +1,11 @@
+%%%-------------------------------------------------------------------
+%%% @author lengor <admin@dhcp-232-174.nomad.chalmers.se>
+%%% @copyright (C) 2012, lengor
+%%% @doc
+%%% The Module provides basic function to search a webwebsite(http://www.booli.se) for Available appartments, in specific areas in Sweden.
+%%% @end
+%%% Created : 10 Oct 2012 by lengor <admin@dhcp-232-174.nomad.chalmers.se>
+%%%-------------------------------------------------------------------
 -module(http_req).
 
 -include_lib("proper/include/proper.hrl").
@@ -11,6 +19,8 @@
 
 -compile(export_all).
 
+
+%% Tweeks needed, Documentation will be availabe soon.
 start(_Place,_NoObjects)->
 %    inets:start(),
     Unique = get_Unique(),
@@ -21,22 +31,43 @@ start(_Place,_NoObjects)->
     httpc:request(Req).
 %    io:format("~s~n",[Req]).
 
+%% Returns a 20 bit hash, for the data feeded through 'Data'.
 %% get_hash(list::integers()) ---> digest::binary() | error
 get_hash(Data)->
     crypto:sha(Data).
 
-%% 1 MegaSec = 1 000 000 Seconds, 1 000 000 MilliSec = 1 Sec
-%% need to re implement with Day Light saving, UTC corrected, following day light specification.
+%%  Returns the UTC time, Currently depends on Underlying Operating System
+%%% Developer Notes : 
+%%  1 MegaSec = 1 000 000 Seconds, 1 000 000 MilliSec = 1 Sec
+%%  need to re implement with Day Light saving, UTC corrected, following day light specification.
 get_time()->
     {MegS,S,MiS} = now(),
     MegS*1000000 + S + MiS div 1000000.
 
+%% Returns a 'unique'[1] 16 bit length string.
 get_Unique()->
    random_string(16).
 
 %%%%%%%%%%%%% Internal Functions
 
-%% Not clear weather it should be only alphanumeric or can include all ASCII values
+%% Ignore, will be used in next versions of the system development
+
+insert_esc_char([])->
+    [];
+insert_esc_char([H|T]) ->
+    insert_esc_char([H|T],[]).
+
+insert_esc_char([],List)->
+    lists:reverse(List);
+insert_esc_char([34|T],List) ->
+    TList = [92|List],
+    insert_esc_char(T,[34|TList]);
+insert_esc_char([H|T],List) ->
+    insert_esc_char(T,[H|List]).
+
+
+%% Function generates a unique bit of length 'Length'. Uses ?ANList defined macro
+%% Developer Notes: Not clear weather it should be only alphanumeric or can include all ASCII values
 random_string(0) ->
     [];
 
@@ -45,6 +76,7 @@ random_string(Length) ->
 
 random_char() -> 
     lists:nth(random:uniform(62),?ANList) .
+%% Test fun line
 %    lists:nth(random:uniform(3),?ANList) .   
 %%%%%%%%%%%%%% Test Functions
 
@@ -59,59 +91,3 @@ prop_test_length_get_unique() ->
 %    ?FORALL(Random,random_string(integer(1,50)),is_list(Random)==true).
 %    ?FORALL(Random,random_string(int()),is_list(Random)).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% Unused code 
-insert_esc_char([])->
-    [];
-insert_esc_char([H|T]) ->
-    insert_esc_char([H|T],[]).
-
-insert_esc_char([],List)->
-    lists:reverse(List);
-insert_esc_char([34|T],List) ->
-    TList = [92|List],
-    insert_esc_char(T,[34|TList]);
-insert_esc_char([H|T],List) ->
-    insert_esc_char(T,[H|List]).
