@@ -176,7 +176,7 @@
             io:format("Begin"),
             {html, f("<pre>Done </pre>",[])}
             end.
-
+	    %% Process data, using this data send a request using the http_req module
             handle_Data(A,[])->
             io:format("End");
             handle_Data(A,[{Key,Val}|T])->
