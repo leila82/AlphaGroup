@@ -15,6 +15,10 @@
 %%%-------------------------------------------------------------------
 
 -module(json_handler).
+-record(appartment,{location=undefined,published=undefined,price=undefined,objType=undefined,orgin_SourceLink=undefined,rooms=undefined,area=undefined,construction_Type=undefined}).%ObjType={Villa|Lgh,Etc..},Orgin_SourceLink=URL(),Rooms,Area,Construction_Type={new,old}}).
+-record(location,{position=undefined,street=undefined,city=undefined,muncipality=undefined,district=undefined}). %{streetAddress,city,MuncipalityName,countyName}
+%% in maps {0,0} res in overall 
+-record(position,{latitude=0,longitude=0}).
 -compile(export_all).
 
 %% Decodes JSON notated strings in to a list of JSON objects
@@ -24,9 +28,39 @@ decode_string()-> %% test
  case   mochijson2:decode(Json_string) of
      {invalid_json,_} ->
 	 io:format("Please check the invalid data input of JSON string in decode_string");
-     {[{<<"totalCount">>,_Num},{<<"count">>,_Num},{<<"listings">>,List}]} ->
-	 List
+     {struct,[_,_,{_,List},_,_,_]} ->
+	 process_list(List,[]);
+     {[_,_,{_,List},_,_,_]} ->
+	 process_list(List,[])
  end.
+
+%% Internal Functions
+
+% Plist -> procesed_list
+process_list([{H}|[]],PList)->
+   [process_object(H)|PList];
+ %   process_object(H);
+
+process_list([{H}|T],PList)->
+%    io:format("~s",[H]),
+ DS = process_object(H), %% Put the ds here
+    process_list(T,[DS|PList]).
+%loc%{position=undefined,street=undefined,city=undefined,muncipality=undefined,district=undefined}). %{streetAddress,city,MuncipalityName,countyName}
+%appartment%{location=undefined,published=undefined,price=undefined,objType=undefined,orgin_SourceLink=undefined,rooms=undefined,area=undefined,construction_Type=undefined
+%% Process List and return DS
+process_object(Obj)->
+    Position = #position{latitude=proplists:get_value(binary:list_to_bin("latitude"),Obj),longitude=proplists:get_value(binary:list_to_bin("longitude"),Obj)},
+    Location = #location{position=Position,street=binary:bin_to_list(proplists:get_value(binary:list_to_bin("streetaddress"),Obj)),city=binary:bin_to_list(proplists:get_value(binary:list_to_bin("latitude"),Obj)),muncipality=binary:bin_to_list(proplists:get_value(binary:list_to_bin("muncipalityName"),Obj)),district=binary:bin_to_list(proplists:get_value(binary:list_to_bin("countyName"),Obj))},
+    #appartment{location=Location,published=binary:bin_to_list(proplists:get_value(binary:list_to_bin("published"),Obj)),price=binary:bin_to_list(proplists:get_value(binary:list_to_bin("price"),Obj)),objType=binary:bin_to_list(proplists:get_value(binary:list_to_bin("objectType"),Obj)),orgin_SourceLink=binary:bin_to_list(proplists:get_value(binary:list_to_bin("url"),Obj)),rooms=proplists:get_value(binary:list_to_bin("rooms"),Obj),area=proplists:get_value(binary:list_to_bin("livingArea"),Obj),construction_Type=proplists:get_value(binary:list_to_bin("isNewConstruction"),Obj)}.
+%    binary:bin_to_list(proplists:get_value(binary:list_to_bin("streetAddress"),Obj)).
+%    Bin_Val = binary:list_to_bin("rent"),
+%    proplists:get_value(Bin_Val,Obj).
+
+%process_object(_H,T)->
+%    T.
+
+%DS = {Location,Published,Price,Position,ObjType={Villa|Lgh,Etc..},Orgin_SourceLink=URL(),Rooms,Area,Construction_Type={new,old},}
+
 
 
 %% Local Test Functions
@@ -40,3 +74,5 @@ print_list([H|T])->
 
 print_Char(C)->
     io:format("~c~n",[C]).
+
+
