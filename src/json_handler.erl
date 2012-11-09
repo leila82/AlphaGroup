@@ -1,13 +1,6 @@
-%%License WARNING: Current version of this code is using a module which is licensed to 
-%%                 Mochi Media Inc. under MIT license. Currently developers have no idea
-%%                 about MIT license. So, if not compactable with our license, by the 
-%%                 time of production code(Final Version) relese this dependency will be
-%%                 eliminated either by developing a similar(serves same functionality) 
-%%                 module or changing it to another compatable license library.
-
 %%%-------------------------------------------------------------------
 %%% @authors lengor <chandu.gokul138@gmail.com>, Sadhi Khan
-%%% @copyright (C) 
+%%% @copyright lengor
 %%% @doc
 %%%
 %%% @end
