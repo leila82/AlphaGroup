@@ -4,7 +4,7 @@
 %%% @doc
 %%% 
 %%% Module extracting information about rental apartments
-%%% in Malmö 
+%%% in Malmï¿½ 
 %%%
 %%% @end
 %%% Created :  2 Nov 2012 by Ivanka Ivanova
@@ -15,7 +15,7 @@
 %% -record(rental, {rooms,area,rent,address,district}).
 -include("alpha_records.hrl").
 
-
+%% This function is to be run.
 download() ->
     inets:start(),
     ssl:start(),
