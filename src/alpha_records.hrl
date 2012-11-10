@@ -1,1 +1,0 @@
--record(rental, {rooms,area,rent,address,district}).
