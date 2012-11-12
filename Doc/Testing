@@ -1,0 +1,11 @@
+TimeStamp:Action:Result
+
+Oct_3_2012: Understanding "booli" api to structure retrival of data from http servers
+
+09:16_Oct_8_2012: Completed Funcion get_hash() with Modified TDD 
+
+09:53_Oct_8_2012: Checked with proper for generate hash : 800 successful tests
+
+10:23_Oct_8_2012: Learned about and implemented random string generator by appending randomly generated valid(32-126 ASCII values) char's: Seems successful
+
+10:32_Oct_8_2012: Concluded test cases and implemented to test weather a generated result is a valid string on randon_string/1 function: 800 Successful Tests
