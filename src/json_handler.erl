@@ -14,7 +14,6 @@
 %% Decodes JSON notated strings in to a list of JSON objects
 %decode_string()-> %% test
 decode_string(Json_string)->
-
  case   mochijson2:decode(Json_string) of
      {invalid_json,_} ->
 	 io:format("Please check the invalid data input of JSON string in decode_string");
@@ -112,3 +111,6 @@ print_list([H|T])->
 
 print_Char(C)->
     io:format("~c~n",[C]).
+
+
+
