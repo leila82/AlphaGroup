@@ -1,16 +1,16 @@
-		  <erl>
+	 <erl>
             out(A)->
             case yaws_api:parse_post(A) of
             {error, Reason} ->
             {html, f("An error occured: ~p", [Reason])};
             List ->
+%% Process all the elements and put it it a record
+%% Send that recodr to Database to store in.
             handle_Data(A, List),
-            io:format("Begin"),
-			yaws_api:redirect("index-2.html")	    
-%%            {html, f("<pre>Done </pre>",[])}
+	    yaws_api:redirect("index-2.html")	    
 			
             end.
-
+	    
             handle_Data(A,[])->
             io:format("End");
             handle_Data(A,[{Key,Val}|T])->
