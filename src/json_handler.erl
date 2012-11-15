@@ -11,6 +11,8 @@
 -include("../include/alpha_records.hrl").
 -compile(export_all).
 
+%% Returns a list of record of #appartments
+
 %% Decodes JSON notated strings in to a list of JSON objects
 %decode_string()-> %% test
 decode_string(Json_string)->
