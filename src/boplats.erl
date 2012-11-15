@@ -2,7 +2,9 @@
 -compile(export_all).
 -define(Url, "http://www.boplats.se/HSS/Object/object_list.aspx?cmguid=4e6e781e-5257-403e-b09d-7efc8edb0ac8&objectgroup=1").
 -define(HTML,"asdadahgdvjbkn aghvsbckn fsghjxb akram fhagmbj gvnbm, mohsen").
--record(boplatApartment, {address,borough,rooms,rent}).
+%-record(boplatApartment, {address,borough,rooms,rent}).
+%-record(rental, {rooms,area,rent,address,district}).
+-include("alpha_records.hrl").
 
 
 main() ->
@@ -31,7 +33,8 @@ parse(Apartment)->
    {PageWithoutBorough,Borough}=getValue(PageWithoutAddress,"<td>","</td>"),
    {PageWithoutRooms,Rooms}=getValue(PageWithoutBorough,"<td align=\"center\">","</td>"),
    {_PageWithoutRent,Rent}=getValue(PageWithoutRooms,"<td>","</td>"),
-   #boplatApartment{address=Address,borough=Borough,rooms=Rooms,rent=Rent}.
+%   #boplatApartment{address=Address,boroug=Borough,rooms=Rooms,rent=Rent}.
+   #rental{address=Address,district=Borough,rooms=Rooms,rent=Rent}.
 
 
 apartmentsInfo(Html)->
