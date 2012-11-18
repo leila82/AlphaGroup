@@ -169,20 +169,43 @@
 
 out(A)->
 List = yaws_api:parse_post(A),
-case io:format("~s~n",[proplists:get_value("city",List)]) of
-	"Uppasala"  ->
-io:format("Uppasala Not implemented yet");     
+case proplists:get_value("city",List) of
 
-_ ->
-Json_Data = http_req:make_request("nacka",3),
-[Data|T] = json_handler:decode_string(Json_Data),
+"Uppasala"  ->
+	    io:format("Uppasala Not implemented yet");     
 
-
-Address1 = Data#appartment.location#location.street, % records or records, Not supported in version runinng lesser than r14
-Rooms1 = Data#appartment.rooms,
-Area1 = Data#appartment.area,
-Price1 = Data#appartment.price,
+City ->
+Json_Data = http_req:make_request("lindholmen",5),
+[Data1|[Data2|[Data3|[Data4|[Data5|_]]]]] = json_handler:decode_string(Json_Data),
+Address1 = Data1#appartment.location#location.street, % records or records, Not supported in version runinng lesser than r14
+Rooms1 = Data1#appartment.rooms,
+Area1 = Data1#appartment.area,
+Price1 = Data1#appartment.price,
 Sell_Buy1 = "Rent",
+
+Address2 = Data2#appartment.location#location.street, % records or records, Not supported in version runinng lesser than r14
+Rooms2 = Data2#appartment.rooms,
+Area2 = Data2#appartment.area,
+Price2 = Data2#appartment.price,
+Sell_Buy2 = "Rent",
+
+Address3 = Data3#appartment.location#location.street, % records or records, Not supported in version runinng lesser than r14
+Rooms3 = Data3#appartment.rooms,
+Area3 = Data3#appartment.area,
+Price3 = Data3#appartment.price,
+Sell_Buy3 = "Rent",
+
+Address4 = Data4#appartment.location#location.street, % records or records, Not supported in version runinng lesser than r14
+Rooms4 = Data4#appartment.rooms,
+Area4 = Data4#appartment.area,
+Price4 = Data4#appartment.price,
+Sell_Buy4 = "Rent",
+
+Address5 = Data5#appartment.location#location.street, % records or records, Not supported in version runinng lesser than r14
+Rooms5 = Data5#appartment.rooms,
+Area5 = Data5#appartment.area,
+Price5 = Data5#appartment.price,
+Sell_Buy5 = "Rent",
 
 {ehtml, {table,[{border,"2"},
                       {width,"100%"},
@@ -199,21 +222,32 @@ Sell_Buy1 = "Rent",
                            {td,[],Rooms1},
                            {td,[],Area1},
                            {td,[],Price1},
-                           {td,[],Sell_Buy1}]} ]}}  %% ,
-
+                           {td,[],Sell_Buy1}]},
+                      {tr,[],
+                          [{td,[],Address2},
+                           {td,[],Rooms2},
+                           {td,[],Area2},
+                           {td,[],Price2},
+                           {td,[],Sell_Buy2}]},
+		      {tr,[],
+                          [{td,[],Address3},
+                           {td,[],Rooms3},
+                           {td,[],Area3},
+                           {td,[],Price3},
+                           {td,[],Sell_Buy3}]},
+                      {tr,[],
+                          [{td,[],Address4},
+                           {td,[],Rooms4},
+                           {td,[],Area4},
+                           {td,[],Price4},
+                           {td,[],Sell_Buy4}]},
+		      {tr,[],
+                          [{td,[],Address5},
+                           {td,[],Rooms5},
+                           {td,[],Area5},
+                           {td,[],Price5},
+                           {td,[],Sell_Buy5}]}]}}
 end.
-%                      {tr,[],
-%                          [{td,[],Address2},
-%                           {td,[],Rooms2},
-%                           {td,[],Area2},
-%                           {td,[],Price2},
-%                           {td,[],Sell_Buy2}]},
-%                      {tr,[],
-%                          [{td,[],Address3},
-%                           {td,[],Rooms3},
-%                           {td,[],Area3},
-%                           {td,[],Price3},
-%                           {td,[],Sell_Buy3}]}]}}.
 
 
 
