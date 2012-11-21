@@ -4,7 +4,7 @@
 -define(HTML,"asdadahgdvjbkn aghvsbckn fsghjxb akram fhagmbj gvnbm, mohsen").
 %-record(boplatApartment, {address,borough,rooms,rent}).
 %-record(rental, {rooms,area,rent,address,district}).
--include("alpha_records.hrl").
+-include("../include/alpha_records.hrl").
 
 
 main() ->
