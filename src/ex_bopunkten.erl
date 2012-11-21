@@ -4,10 +4,14 @@
 -define(Url, "http://www.bopunkten.se/annonser/goteborg").
 -record(boplatApartment,{regionR,rumR,boytaR,hyraR,boendetypR,kontactR,skapadR}).
 
+%% Authors : Akram Beygi, Sadi Khan.
+%% Module completion date : 21st November 2012.
+%% This function is used for starting the module 
+%% This sends a HTTP request to the bopunkten website which in reply sends the bopunkten html source%% page data.There is a function(getPageNumber)  is used for also finding how many pages are there t%%be extracted from the website.
 
-%% This function is used for starting the module  heand 
-%% this sends a HTTP request to the bopunkten website which in reply sends the bopunkten html source%% page data.There is a function(getPageNumber)  is used for also finding how many pages are there t%%be extracted from the website.
 
+
+%% FOR RUNNING THIS MODULE USE (MODULE NAME: Start()).
 start() ->
     inets:start(),
     Url="http://www.bopunkten.se/annonser/goteborg",
