@@ -13,7 +13,7 @@
 -export([download/0]).
 
 %% -record(rental, {rooms,area,rent,address,district}).
--include("alpha_records.hrl").
+-include("../include/alpha_records.hrl").
 
 %% This function is to be run.
 download() ->
