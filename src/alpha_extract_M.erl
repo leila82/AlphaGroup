@@ -12,12 +12,8 @@
 -module(alpha_extract_M).
 -export([download/0]).
 
-<<<<<<< HEAD
 %% -record(rental, {rooms,area,rent,address,district}).
 -include("../include/alpha_records.hrl").
-=======
--include("alpha_records.hrl").
->>>>>>> e3efc436d0354c2ca288b0a8999c76f6852f6e9c
 
 %% The download/0 function is to be run. When called, the function requests
 %% the source code of the page and calls the extract/1 function.
@@ -62,7 +58,7 @@ prefix(_,_) ->
 %% The function returns as a final result
 %% tuple with two lists containing 
 %% the string before and the string after the tag.
-break(Tag,[]) ->
+break(_Tag,[]) ->
     {[],[]};
 break(Tag,XS) ->
     case prefix(Tag,XS) of
