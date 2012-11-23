@@ -37,6 +37,10 @@ start()->
 
 %% Future implementations, should return all the values with no duplicates.
 get_data()->
+<<<<<<< HEAD
+
+    ok.
+=======
     L1 = alpha_extract_M:download(), %% Expected to return a list of records rental
     L2 = boplats:main(), %% Expected to return a list of records rental    
     AList = lists:append(L1,L2),
@@ -59,3 +63,4 @@ push_to_db([H|T]) ->
 {<<"Area">>, list_to_binary(integer_to_list(cleanArea(Area)))}], 
 
 push_to_db(T).
+>>>>>>> 644cd7982a79153e627a4818dc5c56b90501fe1b
