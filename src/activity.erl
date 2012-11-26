@@ -110,3 +110,6 @@ push_to_db([H|T]) ->
 %%
 update_database()->
     get_data().
+
+update_code()->
+    ok.
