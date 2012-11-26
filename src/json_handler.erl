@@ -43,57 +43,83 @@ process_list([{H}|T],PList)->
 process_object(Obj)->
     {LocList} = proplists:get_value(<<"location">>,
 				    Obj),
-    {ListPos} = proplists:get_value(<<"position">>,
-				    LocList),
-    Position = #position{latitude = proplists:get_value(<<"latitude">>,
-							ListPos),
-			 longitude = proplists:get_value(<<"longitude">>,
-							 ListPos)},
     %%
     {ListAdd} = proplists:get_value(<<"address">>,
 				    LocList),
     {ListReg} = proplists:get_value(<<"region">>,
 				    LocList),
-    Location = 
-	#location{position = Position,
-		  street = 
-		      binary:bin_to_list(proplists:get_value(<<"streetAddress">>,
-							     ListAdd,<<"undefined">>)),
-		  city = 
-		      binary:bin_to_list(proplists:get_value(<<"city">>,
-							     ListAdd,<<"undefined">>)),
-		  muncipality = 
-		      binary:bin_to_list(proplists:get_value(<<"municipalityName">>,
-							     ListReg,<<"undefined">>)),
-		  district = 
-		      binary:bin_to_list(proplists:get_value(<<"countyName">>, 									 
-							     ListReg,<<"undefined">>))},
+    {ListAdd} = proplists:get_value(<<"address">>,
+				    LocList),
+    {ListReg} = proplists:get_value(<<"region">>,
+				    LocList),
+
+#rental{rooms = proplists:get_value(<<"rooms">>,
+				    Obj,<<"undefined">>),
+	area = proplists:get_value(<<"livingArea">>,
+				   Obj,<<"undefined">>),
+	rent = proplists:get_value(<<"rent">>,
+				   Obj,<<"undefined">>),
+	address = binary:bin_to_list(proplists:get_value(<<"streetAddress">>,
+							 ListAdd,<<"undefined">>)),	
+	district = binary:bin_to_list(proplists:get_value(<<"city">>,
+							  ListAdd,<<"undefined">>))}.
+
+
+
+%% process_object(Obj)->
+%%     {LocList} = proplists:get_value(<<"location">>,
+%% 				    Obj),
+%%     {ListPos} = proplists:get_value(<<"position">>,
+%% 				    LocList),
+%%     Position = #position{latitude = proplists:get_value(<<"latitude">>,
+%% 							ListPos),
+%% 			 longitude = proplists:get_value(<<"longitude">>,
+%% 							 ListPos)},
+%%     %%
+%%     {ListAdd} = proplists:get_value(<<"address">>,
+%% 				    LocList),
+%%     {ListReg} = proplists:get_value(<<"region">>,
+%% 				    LocList),
+%%     Location = 
+%% 	#location{position = Position,
+%% 		  street = 
+%% 		      binary:bin_to_list(proplists:get_value(<<"streetAddress">>,
+%% 							     ListAdd,<<"undefined">>)),
+%% 		  city = 
+%% 		      binary:bin_to_list(proplists:get_value(<<"city">>,
+%% 							     ListAdd,<<"undefined">>)),
+%% 		  muncipality = 
+%% 		      binary:bin_to_list(proplists:get_value(<<"municipalityName">>,
+%% 							     ListReg,<<"undefined">>)),
+%% 		  district = 
+%% 		      binary:bin_to_list(proplists:get_value(<<"countyName">>, 									 
+%% 							     ListReg,<<"undefined">>))},
     
-    #appartment{location = Location, 
-		published = 
-		    binary:bin_to_list(proplists:get_value(<<"published">>,
-							   Obj,<<"undefined">>)),
-		rent = 
-		    proplists:get_value(<<"rent">>,
-					Obj,<<"undefined">>),
-		price = 
-		    binary:bin_to_list(proplists:get_value(<<"price">>,
-							   Obj,<<"undefined">>)),
-		objType = 
-		    binary:bin_to_list(proplists:get_value(<<"objectType">>,
-							   Obj,<<"undefined">>)),
-		orgin_SourceLink = 
-		    binary:bin_to_list(proplists:get_value(<<"url">>,
-							   Obj,<<"undefined">>)),
-		rooms = 
-		    proplists:get_value(<<"rooms">>,
-					Obj,<<"undefined">>),
-		area = 
-		    proplists:get_value(<<"livingArea">>,
-					Obj,<<"undefined">>),
-		construction_Type = 
-		    proplists:get_value(<<"isNewConstruction">>,
-					Obj,<<"undefined">>)}.
+%%     #appartment{location = Location, 
+%% 		published = 
+%% 		    binary:bin_to_list(proplists:get_value(<<"published">>,
+%% 							   Obj,<<"undefined">>)),
+%% 		rent = 
+%% 		    proplists:get_value(<<"rent">>,
+%% 					Obj,<<"undefined">>),
+%% 		price = 
+%% 		    binary:bin_to_list(proplists:get_value(<<"price">>,
+%% 							   Obj,<<"undefined">>)),
+%% 		objType = 
+%% 		    binary:bin_to_list(proplists:get_value(<<"objectType">>,
+%% 							   Obj,<<"undefined">>)),
+%% 		orgin_SourceLink = 
+%% 		    binary:bin_to_list(proplists:get_value(<<"url">>,
+%% 							   Obj,<<"undefined">>)),
+%% 		rooms = 
+%% 		    proplists:get_value(<<"rooms">>,
+%% 					Obj,<<"undefined">>),
+%% 		area = 
+%% 		    proplists:get_value(<<"livingArea">>,
+%% 					Obj,<<"undefined">>),
+%% 		construction_Type = 
+%% 		    proplists:get_value(<<"isNewConstruction">>,
+%% 					Obj,<<"undefined">>)}.
 %%    binary:bin_to_list(proplists:get_value(binary:list_to_bin("streetAddress"),Obj)).
 %%    Bin_Val = binary:list_to_bin("rent"),
 %%    proplists:get_value(Bin_Val,Obj).
