@@ -13,18 +13,22 @@
 
 
 start()->
-%% TODO - Check couchdb status on local server(is it running?)
-%%     - if started proceed with 2
-%%     2- Get all the data from sources (for all five cities)
-%%     - check the rent/sell status
-%%     - sort everything according to rent/sell status
-%%     - create data accoring to json object notation and update it[2A]
-%%     - [2A] data in format key:Objects Value:a tuple of objects [{Address1,Rent1,Price1,etcetc},{Address2,Rent2,...},...]
-%% Currently donsnt have idea about ho to chec the availability of data bse server 
-%% So implementing from stage 2
-
-%% Get data from all the sources
-    ok.
+    %% TODO - Check couchdb status on local server(is it running?)
+    %%     - if started proceed with 2
+    %%     2- Get all the data from sources (for all five cities)
+    %%     - check the rent/sell status
+    %%     - sort everything according to rent/sell status
+    %%     - create data accoring to json object notation and update it[2A]
+    %%     - [2A] data in format key:Objects Value:a tuple of objects [{Address1,Rent1,Price1,etcetc},{Address2,Rent2,...},...]
+    %% Currently donsnt have idea about ho to chec the availability of data bse server 
+    %% So implementing from stage 2
+    
+    %% Get data from all the sources
+    io:format("started"),
+    receive 
+    after 86400000 ->
+	    get_data()
+    end.
 
 
 %%[Done]
@@ -101,3 +105,8 @@ push_to_db([H|T]) ->
 %% 	   {<<"Rent">>, Rent},
 %% 	   {<<"Rooms">>, Rooms},
 %% 	   {<<"Area">>, Area}],    
+
+
+%%
+update_database()->
+    get_data().
