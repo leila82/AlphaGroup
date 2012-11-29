@@ -11,9 +11,7 @@
 %% When an yaws server is been started -
 %% -(assuming yaws.conf file has a key 'runmod' set to value 'activity')
 
-
-start()->
-    %% TODO - Check couchdb status on local server(is it running?)
+%% TODO - Check couchdb status on local server(is it running?)
     %%     - if started proceed with 2
     %%     2- Get all the data from sources (for all five cities)
     %%     - check the rent/sell status
@@ -22,12 +20,34 @@ start()->
     %%     - [2A] data in format key:Objects Value:a tuple of objects [{Address1,Rent1,Price1,etcetc},{Address2,Rent2,...},...]
     %% Currently donsnt have idea about ho to chec the availability of data bse server 
     %% So implementing from stage 2
-    
-    %% Get data from all the sources
-    io:format("started"),
+
+
+
+%%Update TODO
+%%-- get data from four extract modules from 4 cities, store them accordingly
+
+%% @Spec start()->
+
+%%Spawn register needed to be done to use receive thingy
+start()->
+    case lists:member(registered(),alpha_activity) of
+	true ->
+	    alpha_activity ! {stop,user},
+	    start();
+	false ->
+	    register(alpha_activity,spawn(?MODULE,loop,[]))
+    end.
+
+loop()->
     receive 
+	{update,user}->
+	    get_and_put_data(),
+	    loop();
+	{stop,user}->
+	    ok
     after 86400000 ->
-	    get_data()
+	    get_and_put_data(),
+	    loop()
     end.
 
 
@@ -41,7 +61,7 @@ start()->
 %% A list with all the objects
 
 %% Future implementations, should return all the values with no duplicates.
-get_data()->
+get_and_put_data()->
    %% L1 = alpha_extract_M:download(), %% Expected to return a list of records rental [Malmo]
    %% L2 = boplats:main(), %% Expected to return a list of records rental [Gothenburg] 
      http_req:make_request("Göteborg",100).
@@ -65,12 +85,12 @@ d_push([H|_T],_List) ->
 	   {<<"Rent">>, Rent},
 	   {<<"Rooms">>, Rooms},
 	    {<<"Area">>, Area}],
-unicode:characters_to_binary(District,latin1,utf8).
-%    unicode:bom_to_encoding(list_to_binary(District)).
-%    District.
+    unicode:characters_to_binary(District,latin1,utf8).
+						%    unicode:bom_to_encoding(list_to_binary(District)).
+						%    District.
 
-%erlang_couchdb:create_document({"127.0.0.1", 5984}, "proto_v1", Doc).
-%        d_push(T,[Doc|List]).
+						%erlang_couchdb:create_document({"127.0.0.1", 5984}, "proto_v1", Doc).
+						%        d_push(T,[Doc|List]).
    
 
 push_to_db([])->
@@ -109,7 +129,7 @@ push_to_db([H|T]) ->
 
 %%
 update_database()->
-    get_data().
+    get_and_put_data().
 
 update_code()->
     ok.
