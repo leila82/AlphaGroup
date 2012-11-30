@@ -63,13 +63,15 @@ loop()->
 %% Future implementations, should return all the values with no duplicates.
 get_and_put_data()->
    %% L1 = alpha_extract_M:download(), %% Expected to return a list of records rental [Malmo]
-   %% L2 = boplats:main(), %% Expected to return a list of records rental [Gothenburg] 
-     http_req:make_request("Göteborg",100).
-   % BList = lists:append(L1,L2),
+    L2 = boplats:main(), %% Expected to return a list of records rental [Gothenburg] 
+   %%  http_req:make_request("Göteborg",100).
+  %% BList = lists:append(L1,L2),
    %% AList = lists:append(L3,BList),
-   %% push_to_db(AList).
-   %% push_to_db(L2).
+  %%  push_to_db(BList).
+    push_to_db(L2).
 %%    d_push(L2,[]).
+
+
 d_push([],List)->
     List;
 
@@ -106,8 +108,7 @@ push_to_db([H|T]) ->
 	   {<<"Rent">>, Rent},
 	   {<<"Rooms">>, Rooms},
 	   {<<"Area">>, Area}],
-
-    erlang_couchdb:create_document({"127.0.0.1", 5984}, "proto_v2", Doc),
+    erlang_couchdb:create_document({"127.0.0.1", 5984}, "gothenburg", Doc),
     push_to_db(T).
 
 

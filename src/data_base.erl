@@ -9,9 +9,46 @@
 %% and port number "5984"
 -define(DB_IP,"127.0.0.1"). %% Data base IP adress
 -define(DB_PN,5984). %% Data base Port Number
+-define(ViewClass,"class").
+%% View id need to be defined according to the quiry made so all the maps needed to be listed here.
+%% Test
+-define(ViewId612,"612").
+-define(ViewId612i,"612i").
+-define(ViewId6121,"6121").
+-define(ViewId6122,"6122").
+-define(ViewId6123,"6123").
+
+-define(ViewId03,"03").
+-define(ViewId03i,"03i").
+-define(ViewId031,"031").
+-define(ViewId032,"032").
+-define(ViewId033,"033").
+
+-define(ViewId12,"12").
+-define(ViewId12i,"12i").
+-define(ViewId121,"121").
+-define(ViewId122,"122").
+-define(ViewId123,"123").
+
+-define(ViewId36,"36").
+-define(ViewId36i,"36i").
+-define(ViewId361,"361").
+-define(ViewId362,"362").
+-define(ViewId363,"363").
+
 %%-compile([create_database/1]).
 -compile(export_all).
 
+
+%% @Key -> {City,Rent,NoRooms}
+get_data(Key)->
+    {City,Rent,NoRooms} = Key,
+    case City of 
+	"Göteborg" ->
+	    get_gothenburg_rdata(Rent,NoRooms);
+	_ ->
+		"Krishna we didn't implement it yet"
+    end.
 
 %% @spec create_database(DBServer::server_address(), Database::string()) ->  ok | {error, Reason::any()}
 %%
@@ -44,16 +81,15 @@ get_designs(DB_Name) when is_list(DB_Name)->
     Uri = "/"++DB_Name++"/_all_docs?startkey=\"_design\/\"&endkey=\"_design0\"",
     erlang_couchdb:raw_request("GET",?DB_IP,?DB_PN,Uri,[]).
 
-get_gothenburg_rdata()->
-    [].
+get_gothenburg_rdata(Rent,NoRooms) when Rent>6000,Rent<12000,NoRooms==3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]).
+%    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"proto_v2",?ViewClass,?ViewId,[]).
 
 get_gothenburg_sdata()->
     [].
 
 
-%% @Key -> {City,Rent,Sqmets,NoRooms}
-get_data(_Key)->
-    ok.
+
 
 process_n_delete(_,[])->
     ok;
