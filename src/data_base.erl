@@ -47,7 +47,7 @@ get_data(Key)->
 	"Göteborg" ->
 	    get_gothenburg_rdata(Rent,NoRooms);
 	_ ->
-		"Krishna we didn't implement it yet"
+		"Ooo Krishna we didn't implement it yet"
     end.
 
 %% @spec create_database(DBServer::server_address(), Database::string()) ->  ok | {error, Reason::any()}
@@ -81,9 +81,53 @@ get_designs(DB_Name) when is_list(DB_Name)->
     Uri = "/"++DB_Name++"/_all_docs?startkey=\"_design\/\"&endkey=\"_design0\"",
     erlang_couchdb:raw_request("GET",?DB_IP,?DB_PN,Uri,[]).
 
+
+get_gothenburg_rdata(Rent,NoRooms) when Rent>6000,Rent<12000,NoRooms>3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>6000,Rent<12000,NoRooms==1->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>6000,Rent<12000,NoRooms==2->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
 get_gothenburg_rdata(Rent,NoRooms) when Rent>6000,Rent<12000,NoRooms==3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,_NoRooms) when Rent>6000,Rent<12000->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+
+
+get_gothenburg_rdata(Rent,NoRooms) when Rent>0,Rent<3000,NoRooms>3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>0,Rent<3000,NoRooms==1->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>0,Rent<3000,NoRooms==2->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>0,Rent<3000,NoRooms==3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,_NoRooms) when Rent>0,Rent<3000->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+
+
+get_gothenburg_rdata(Rent,NoRooms) when Rent>12000,NoRooms>3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>12000,NoRooms==1->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>12000,NoRooms==2->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>12000,NoRooms==3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,_NoRooms) when Rent>12000->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+
+
+get_gothenburg_rdata(Rent,NoRooms) when Rent>3000,Rent<6000,NoRooms>3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>3000,Rent<6000,NoRooms==1->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>3000,Rent<6000,NoRooms==2->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,NoRooms) when Rent>3000,Rent<6000,NoRooms==3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]);
+get_gothenburg_rdata(Rent,_NoRooms) when Rent>3000,Rent<6000->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"gothenburg",?ViewClass,?ViewId6123,[]).
-%    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},"proto_v2",?ViewClass,?ViewId,[]).
 
 get_gothenburg_sdata()->
     [].
