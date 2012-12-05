@@ -1,0 +1,22 @@
+{
+   "_id": "_design/rent_query__prices",
+    "language": "erlang",
+   "views": {
+       "0-3000": {
+           "map": "fun({Doc}) ->\nV1= proplists:get_value(<<\"Rent\">>, Doc, null),      \nM=list_to_integer(binary_to_list(V1)),\nM2 = list_to_binary(integer_to_list(M)),\ncase V1 of M2 when M >= 0, M =< 3000 ->\nKo =proplists:get_value(<<\"_rev\">>, Doc, null),\nK1= proplists:get_value(<<\"_id\">>, Doc, null),\nV1= proplists:get_value(<<\"Rent\">>, Doc, null),\nV2= proplists:get_value(<<\"Rooms\">>, Doc, null),\nV3= proplists:get_value(<<\"District\">>, Doc, null),\nV4= proplists:get_value(<<\"Adress\">>, Doc, null),\nV5= proplists:get_value(<<\"Area\">>, Doc, null),\nEmit([Ko,K1],[V1,V2,V3,V4,V5]);\n_ -> ok \nend end.\n          ",
+           "reduce": "fun(Keys, Values, ReReduce) -> Values end."
+       },
+       "3001-6000": {
+           "map": "fun({Doc}) ->\nV1= proplists:get_value(<<\"Rent\">>, Doc, null),      \nM=list_to_integer(binary_to_list(V1)),\nM2 = list_to_binary(integer_to_list(M)),\ncase V1 of M2 when M >= 3001, M =< 6000 ->\nKo =proplists:get_value(<<\"_rev\">>, Doc, null),\nK1= proplists:get_value(<<\"_id\">>, Doc, null),\nV1= proplists:get_value(<<\"Rent\">>, Doc, null),\nV2= proplists:get_value(<<\"Rooms\">>, Doc, null),\nV3= proplists:get_value(<<\"District\">>, Doc, null),\nV4= proplists:get_value(<<\"Adress\">>, Doc, null),\nV5= proplists:get_value(<<\"Area\">>, Doc, null),\nEmit([Ko,K1],[V1,V2,V3,V4,V5]);\n_ -> ok \nend end.\n          ",
+           "reduce": "fun(Keys, Values, ReReduce) -> Values end."
+       },
+       "6001-12000": {
+           "map": "fun({Doc}) ->\nV1= proplists:get_value(<<\"Rent\">>, Doc, null),      \nM=list_to_integer(binary_to_list(V1)),\nM2 = list_to_binary(integer_to_list(M)),\ncase V1 of M2 when M >= 6001, M =< 12000 ->\nKo =proplists:get_value(<<\"_rev\">>, Doc, null),\nK1= proplists:get_value(<<\"_id\">>, Doc, null),\nV1= proplists:get_value(<<\"Rent\">>, Doc, null),\nV2= proplists:get_value(<<\"Rooms\">>, Doc, null),\nV3= proplists:get_value(<<\"District\">>, Doc, null),\nV4= proplists:get_value(<<\"Adress\">>, Doc, null),\nV5= proplists:get_value(<<\"Area\">>, Doc, null),\nEmit([Ko,K1],[V1,V2,V3,V4,V5]);\n_ -> ok \nend end.\n          ",
+           "reduce": "fun(Keys, Values, ReReduce) -> Values end."
+       },
+       "plus_12001": {
+           "map": "fun({Doc}) ->\nV1= proplists:get_value(<<\"Rent\">>, Doc, null),      \nM=list_to_integer(binary_to_list(V1)),\nM2 = list_to_binary(integer_to_list(M)),\ncase V1 of M2 when M >= 12001 ->\nKo =proplists:get_value(<<\"_rev\">>, Doc, null),\nK1= proplists:get_value(<<\"_id\">>, Doc, null),\nV1= proplists:get_value(<<\"Rent\">>, Doc, null),\nV2= proplists:get_value(<<\"Rooms\">>, Doc, null),\nV3= proplists:get_value(<<\"District\">>, Doc, null),\nV4= proplists:get_value(<<\"Adress\">>, Doc, null),\nV5= proplists:get_value(<<\"Area\">>, Doc, null),\nEmit([Ko,K1],[V1,V2,V3,V4,V5]);\n_ -> ok \nend end.\n          ",
+           "reduce": "fun(Keys, Values, ReReduce) -> Values end."
+       }
+   }
+}
