@@ -27,7 +27,7 @@ make_request(Place,No_Objects)->
     Hash_Str = lists:append(?CallerID, lists:append(integer_to_list(Time),lists:append(?PrivateKey,Unique))),
     <<Hash:160/integer>> = get_hash(Hash_Str),
     {ok,{_Hmm,_Hmmm,Data}} = req("http://api.booli.se/listings",[{"q",Place},{"limit",NoObjects},{"offset","0"},{"callerId",?CallerID},{"unique",Unique},{"time",integer_to_list(Time)},{"hash",bin_hex(Hash)}]),
-%     {ok,{_Hmm,_Hmmm,Data}} = req("http://api.booli.se/listings",[{"q","nacka"},{"limit","3"},{"offset","0"},{"callerId",?CallerID},{"unique",Unique},{"time",integer_to_list(Time)},{"hash",bin_hex(Hash)}]), %% Test
+    %%     {ok,{_Hmm,_Hmmm,Data}} = req("http://api.booli.se/listings",[{"q","nacka"},{"limit","3"},{"offset","0"},{"callerId",?CallerID},{"unique",Unique},{"time",integer_to_list(Time)},{"hash",bin_hex(Hash)}]), %% Test
    Data.
 
 req(URL,L)->

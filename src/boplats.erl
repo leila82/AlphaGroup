@@ -4,7 +4,7 @@
 -define(HTML,"asdadahgdvjbkn aghvsbckn fsghjxb akram fhagmbj gvnbm, mohsen").
 %-record(boplatApartment, {address,borough,rooms,rent}).
 %-record(rental, {rooms,area,rent,address,district}).
--include("alpha_records.hrl").
+-include("../include/alpha_records.hrl").
 
 
 main() ->
@@ -33,8 +33,10 @@ parse(Apartment)->
    {PageWithoutBorough,Borough}=getValue(PageWithoutAddress,"<td>","</td>"),
    {PageWithoutRooms,Rooms}=getValue(PageWithoutBorough,"<td align=\"center\">","</td>"),
    {_PageWithoutRent,Rent}=getValue(PageWithoutRooms,"<td>","</td>"),
-%   #boplatApartment{address=Address,boroug=Borough,rooms=Rooms,rent=Rent}.
-   #rental{address=Address,district=Borough,rooms=Rooms,rent=Rent}.
+%%   #boplatApartment{address=Address,boroug=Borough,rooms=Rooms,rent=Rent}.
+%%   #rental{address=Address,district=Borough,rooms=Rooms,rent=Rent}.
+%%   #rental{address=Address,area="n/a",district=Borough,rooms=Rooms,rent=Rent}.
+    #rental{address=Address,area=0,district=Borough,rooms=list_to_integer(Rooms),rent=list_to_integer(Rent)}.
 
 
 apartmentsInfo(Html)->
@@ -82,3 +84,23 @@ end,
      LeftApartment=string:substr(Apartment,StartNextApartment,NewApartmentLength),     
      {LeftApartment, Value}.
 
+
+%% %% @spec reform(String())->String()
+%% %% @description 
+%% %% @retrun_type returns a string()
+%% reform(String)->
+%%     string:join(fixReplace(String),"").
+
+%% fixReplace([H|T]) -> [fixSwe([H])|fixReplace(T)];
+%% fixReplace([])->[].
+
+%% fixSwe(String)->
+%%     String1 = re:replace(String, "å","a", [{return,list}]),
+%%     String2 = re:replace(String1, "ä","a", [{return,list}]), %
+%%     String3 = re:replace(String2, "ö", "o",[{return,list}]),
+%%     String4 = re:replace(String3, "Å", "A",[{return,list}]),
+%%     String5 = re:replace(String4, "é","e" ,[{return,list}]),
+%%     String6 = re:replace(String5, "Ä", "A", [{return,list}]),
+%%     String7 = re:replace(String6, "Ö","O",[{return,list}]),
+%%     String8 = re:replace(String7, "\r", "", [{return,list}]),
+%%     re:replace(String8, "\n", "", [{return,list}]). 
