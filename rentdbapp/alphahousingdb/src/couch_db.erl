@@ -9,10 +9,42 @@
 
 %% API
 -export([start_link/3,
-         all/1,
-         find/2,
-         create/2,
-         update/3,
+		
+%% Export functions for the rent between 0-3000 
+%%from room option:any to 5+
+
+         rent_0_3000/1,
+		 rent_0_3000_rm_1_2/1,
+		 rent_0_3000_rm_3_4/1,
+		 rent_0_3000_rm_plus_5/1,
+		
+%%Export functions for the rent between 3001_6000 
+%%from room option:any to 5+
+
+         rent_3001_6000/1,
+		 rent_3001_6000_rm_1_2/1,
+		 rent_3001_6000_rm_3_4/1,
+		 rent_3001_6000_rm_plus_5/1,
+		 
+%%Export functions for the rent between 6001_12000
+%%from room option:any to 5+
+
+         rent_6001_12000/1,
+		 rent_6001_12000_rm_1_2/1,
+		 rent_6001_12000_rm_3_4/1,
+		 rent_6001_12000_rm_plus_5/1,
+		 
+%%Export functions for the rent >= 12001
+%%from room option:any to 5+
+
+         rent_plus_12001/1,
+		 rent_plus_12001_rm_1_2/1,
+		 rent_plus_12001_rm_3_4/1,
+		 rent_plus_12001_rm_plus_5/1,		        
+         %%create/2, 
+
+%% Export function that will terminate the server    
+  
          terminate/1]).
 
 %% gen_server callbacks
@@ -22,7 +54,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(rentdb, {db}).
+-record(rent_db, {db}).
 
 %%%===================================================================
 %%% Public Types
@@ -35,18 +67,54 @@
 start_link(Server, Port, DB) ->
     gen_server:start_link(?MODULE, [Server, Port, DB], []).
 
-all(PID) ->
-    gen_server:call(PID, all).
+%% Calls for the rent between 0-3000 from any to 5+ rooms
+rent_0_3000(PID) ->
+    gen_server:call(PID, rent_0_3000).
+rent_0_3000_rm_1_2(PID) ->
+    gen_server:call(PID, rent_0_3000_rm_1_2).
+rent_0_3000_rm_3_4(PID) ->
+    gen_server:call(PID, rent_0_3000_rm_3_4).
+rent_0_3000_rm_plus_5(PID) ->
+    gen_server:call(PID, rent_0_3000_rm_plus_5).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-find(PID, ID) ->
-    gen_server:call(PID, {find, ID}).
+  %% Calls for the rent between 3001_6000 from any to 5+ rooms  
 
-create(PID, Doc) ->
-    gen_server:call(PID, {create, Doc}).
+rent_3001_6000(PID) ->
+    gen_server:call(PID, rent_3001_6000).
+rent_3001_6000_rm_1_2(PID) ->
+    gen_server:call(PID, rent_3001_6000_rm_1_2).
+rent_3001_6000_rm_3_4(PID) ->
+    gen_server:call(PID, rent_3001_6000_rm_3_4).
+rent_3001_6000_rm_plus_5(PID) ->
+    gen_server:call(PID, rent_3001_6000_rm_plus_5).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-update(PID, ID, JsonDoc) ->
-    gen_server:call(PID, {update, ID, JsonDoc}).
+     %% Calls for the rent between 6001_12000 from any to 5+ rooms  
 
+rent_6001_12000(PID) ->
+    gen_server:call(PID, rent_6001_12000).
+rent_6001_12000_rm_1_2(PID) ->
+    gen_server:call(PID, rent_6001_12000_rm_1_2).
+rent_6001_12000_rm_3_4(PID) ->
+    gen_server:call(PID, rent_6001_12000_rm_3_4).
+rent_6001_12000_rm_plus_5(PID) ->
+    gen_server:call(PID, rent_6001_12000_rm_plus_5).
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+ %% Calls for the rent > 12001 from any to 5+ rooms 
+rent_plus_12001(PID) ->
+    gen_server:call(PID, rent_plus_12001).
+rent_plus_12001_rm_1_2(PID) ->
+    gen_server:call(PID, rent_plus_12001_rm_1_2).
+rent_plus_12001_rm_3_4(PID) ->
+    gen_server:call(PID, rent_plus_12001_rm_3_4).
+rent_plus_12001_rm_plus_5(PID) ->
+    gen_server:call(PID, rent_plus_12001_rm_plus_5).
+
+
+%%create(PID, Doc) ->
+   %% gen_server:call(PID, {create, Doc}).
 terminate(PID) ->
     gen_server:call(PID, terminate).
 
@@ -54,46 +122,91 @@ terminate(PID) ->
 %%% gen_server callbacks
 %%%===================================================================
 
-%% @private
+
 init([Server, Port, DB]) ->
     CouchServer = couchbeam:server_connection(Server, Port, "", []),
     {ok, CouchDB} = couchbeam:open_db(CouchServer, DB),
-    {ok, #rentdb{db=CouchDB}}.
+    {ok, #rent_db{db=CouchDB}}.
 
-%% @private
-handle_call(all, _From, #rentdb{db=DB}=State) ->
-    Docs = get_docs(DB, [{descending, true}]),
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+handle_call(rent_0_3000, _From, #rent_db{db=DB}=State) ->
+    Docs = queries(DB, {"by_price_rooms", "rent_0-3000_rooms_any"},[]),
     {reply, mochijson2:encode(Docs), State};
-handle_call({find, ID}, _From, #rentdb{db=DB}=State) ->
-    [Doc] = get_docs(DB, [{key, list_to_binary(ID)}]),
-    {reply, mochijson2:encode(Doc), State};
-handle_call({create, Doc}, _From, #rentdb{db=DB}=State) ->
-    {ok, Doc1} = couchbeam:save_doc(DB, Doc),
-    {NewDoc} = couchbeam_doc:set_value(<<"id">>, couchbeam_doc:get_id(Doc1), Doc1),
-    {reply, mochijson2:encode({struct, NewDoc}), State};
-handle_call({update, ID, NewDoc}, _From, #rentdb{db=DB}=State) ->
-    IDBinary = list_to_binary(ID),
-    {ok, Doc} = couchbeam:open_doc(DB, IDBinary),
-    NewDoc2 = couchbeam_doc:set_value(<<"_id">>, IDBinary, {NewDoc}),
-    NewDoc3 = couchbeam_doc:set_value(<<"_rev">>, couchbeam_doc:get_rev(Doc), NewDoc2),
-    {ok, {Doc1}} = couchbeam:save_doc(DB, NewDoc3),
-    {reply, mochijson2:encode({struct, Doc1}), State};
+handle_call(rent_0_3000_rm_1_2, _From, #rent_db{db=DB}=State) ->
+  Docs = queries(DB, {"by_price_rooms", "rent_0-3000_rooms_1-2"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_0_3000_rm_3_4, _From, #rent_db{db=DB}=State) ->
+Docs = queries(DB, {"by_price_rooms", "rent_0-3000_rooms_3-4"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_0_3000_rm_plus_5, _From, #rent_db{db=DB}=State) ->
+  Docs = queries(DB, {"by_price_rooms", "rent_0-3000_rooms_plus_5"},[]),
+    {reply, mochijson2:encode(Docs), State};
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+handle_call(rent_3001_6000, _From, #rent_db{db=DB}=State) ->
+  Docs = queries(DB, {"by_price_rooms", "rent_3001-6000_rooms_any"},[]),
+    {reply, mochijson2:encode(Docs), State};		
+handle_call(rent_3001_6000_rm_1_2, _From, #rent_db{db=DB}=State) ->
+ Docs = queries(DB, {"by_price_rooms", "rent_3001-6000_rooms_1-2"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_3001_6000_rm_3_4, _From, #rent_db{db=DB}=State) ->
+   Docs = queries(DB, {"by_price_rooms", "rent_3001-6000_rooms_3-4"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_3001_6000_rm_plus_5, _From, #rent_db{db=DB}=State) ->
+   Docs = queries(DB, {"by_price_rooms", "rent_3001-6000_rooms_plus_5"},[]),
+    {reply, mochijson2:encode(Docs), State};
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+handle_call(rent_6001_12000, _From, #rent_db{db=DB}=State) ->
+  Docs = queries(DB, {"by_price_rooms", "rent_6001-12000_rooms_any"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_6001_12000_rm_1_2, _From, #rent_db{db=DB}=State) ->
+   Docs = queries(DB, {"by_price_rooms", "rent_6001-12000_rooms_1-2"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_6001_12000_rm_3_4, _From, #rent_db{db=DB}=State) ->
+ Docs = queries(DB, {"by_price_rooms", "rent_6001-12000_rooms_3-4"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_6001_12000_rm_plus_5, _From, #rent_db{db=DB}=State) ->
+   Docs = queries(DB, {"by_price_rooms", "rent_6001-12000_rooms_plus_5"},[]),
+    {reply, mochijson2:encode(Docs), State};
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+handle_call(rent_plus_12001, _From, #rent_db{db=DB}=State) ->
+Docs = queries(DB, {"by_price_rooms", "rent_plus12001_rooms_any"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_plus_12001_rm_1_2, _From, #rent_db{db=DB}=State) ->
+Docs = queries(DB, {"by_price_rooms", "rent_0-3000_rooms_any"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_plus_12001_rm_3_4, _From, #rent_db{db=DB}=State) ->
+Docs = queries(DB, {"by_price_rooms", "rent_0-3000_rooms_any"},[]),
+    {reply, mochijson2:encode(Docs), State};
+handle_call(rent_plus_12001_rm_plus_5, _From, #rent_db{db=DB}=State) ->
+   Docs = queries(DB, {"by_price_rooms", "rent_0-3000_rooms_any"},[]),
+    {reply, mochijson2:encode(Docs), State};
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%handle_call({create, Doc}, _From, #rent_db{db=DB}=State) ->
+   %% {ok, Doc1} = couchbeam:save_doc(DB, Doc),
+    %%{NewDoc} = couchbeam_doc:set_value(<<"id">>, couchbeam_doc:get_id(Doc1), Doc1),
+    %%{reply, mochijson2:encode({struct, NewDoc}), State};
+    
+
 handle_call(terminate, _From, State) ->
     {stop, normal, State}.
 
-%% @private
+
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
-%% @private
+
 handle_info(_Info, State) ->
     {noreply, State}.
 
-%% @private
+
 terminate(_Reason, _State) ->
     ok.
 
-%% @private
+
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
@@ -101,17 +214,15 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-get_docs(DB, Options) ->	
-		[Rooms, Rent]= Options,
-		
-    {ok, AllDocs} = couchbeam:view(DB, {"all", "find"}, Options),
-    {ok, Results} = couchbeam_view:fetch(AllDocs),
+queries(DB, Views, Options) ->
+	
+    {_, AllDocs} = couchbeam_view:fetch( DB, Views,Options),
+	AllDocs.
 
-    {[{<<"total_rows">>, _Total},
-      {<<"offset">>, _Offset},
-      {<<"rows">>, Rows}]} = Results,
 
-    lists:map(fun({Row}) ->
-                      {<<"value">>, {Value}} = lists:keyfind(<<"value">>, 1, Row),
-                      {struct, Value}
-              end, Rows).
+
+
+
+
+              
+             

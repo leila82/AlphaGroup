@@ -7,14 +7,14 @@
 -record(couch, {db}).
 
 main() ->
+	%% {ok, PID} = couch_db_sup:start_child(),%%Leila
      inets:start(),
-     {ok, {_Status, _Header, HTML}} = httpc:request(?Url),
-	 {ok, PID} = couch_db_sup:start_child(),%%Leila
-    {ok, #couch{db=PID}},%%Leila
+     {ok, {_Status, _Header, HTML}} = httpc:request(?Url),	
+    %%{ok, #couch{db=PID}},%%Leila
      MainPart= apartmentsInfo(HTML),  
-     findApartment(MainPart,[]),
-	 alphagroup_sup:terminate_child(PID),%%Leila
-	{ok, #couch{db=PID}}.%%Leila.
+     findApartment(MainPart,[]).
+	%% alphagroup_sup:terminate_child(PID),%%Leila
+	%%{ok, #couch{db=PID}}.%%Leila.
 
 
 findApartment(MainInformation,AppList)->
@@ -38,30 +38,16 @@ parse(Apartment)->
    {_PageWithoutRent,Rent}=getValue(PageWithoutRooms,"<td>","</td>"),
    %%{Address,Borough,Rooms,Rent}
 
-   %% Edited by Leila 
-Doc =[{<<"Adress">>, list_to_binary(Address)},
-				{<<"District">>, list_to_binary(
+    %% This codes store the extracted data to the database as documents! 
+%% The conversion using unicode functions resolve the problem with UTF8 Author Leila Keza
+Doc =[{<<"Adress">>, unicode:characters_to_binary(Address)},
+				{<<"District">>, unicode:characters_to_binary(
 				 lists:append(Borough, "/ Gothenburg"))},
-				{<<"Rent">>, list_to_binary(Rent)},
-				{<<"Rooms">>, list_to_binary(Rooms)}],
-      			couch_db:create(#couch.db, {Doc}).%% Leilas Part!
-	    
-            %%fun ({json,{struct,[{<<"ok">>,true}, {<<"id">>, DocID}, {<<"rev">>, DocRev}]}}) ->
-                 %%   put(doc_id_1, DocID),
-                    %%put(doc_rev_1, DocRev),
-                    %%true;
-                %%(_) ->
-                   %% false
-           %% end,
-           %% erlang_couchdb:create_document({"localhost", 5984}, "housingdb", Doc),          
-       
-      %%  ok.%% End Leilas Codes 
+				{<<"Rent">>, unicode:characters_to_binary(Rent)},
+				{<<"Rooms">>, unicode:characters_to_binary(Rooms)}],
+      			%%couch_db:create(#couch.db, {Doc}). Leilas Part!
 
-
-  
-
-
-
+         erlang_couchdb:create_document({"localhost", 5984}, "pu", Doc).%% end Leilas Codes 
 
 apartmentsInfo(Html)->
     Start = string:str(Html, "<tr class=\""++"tbl_cell_list_even"++"\""),
