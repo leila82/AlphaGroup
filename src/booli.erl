@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author lengor <admin@dhcp-232-174.nomad.chalmers.se>
+%%% @authors Gokul S Evuri, Sadhi MS Khan
 %%% @copyright (C) 2012, lengor
 %%% @doc
 %%%

@@ -1,6 +1,5 @@
 %% Authors : Leila, Suzan, Gokul
 
-
 %% Module developed according to the specific specification for Alpha housing
 %% Not a general module
 -module(data_base).
@@ -48,6 +47,12 @@
 -define(ViewId361,"361").
 -define(ViewId362,"362").
 -define(ViewId363,"363").
+
+-define(ViewIdi,"i").
+-define(ViewId1,"1").
+-define(ViewId2,"2").
+-define(ViewId3,"3").
+
 
 -define(Limit1LS,"undefined").
 -define(Limit1HS,"undefined").
@@ -124,21 +129,45 @@ get_designs(DB_Name) when is_list(DB_Name)->
     erlang_couchdb:raw_request("GET",?DB_IP,?DB_PN,Uri,[]).
 
 
+%%return an empty list or a list of tuples in order {Adress,Rooms,Area,Rent}
 %% @Key -> {City,Rent,NoRooms}
 get_rdata({City,Rent,NoRooms})->
   %  {City,Rent,NoRooms} = Key,
     case City of 
-	"Göteborg" ->
-	    get_rdata(?Gothenburg,Rent,NoRooms);
-	"Malmö" ->
-	    get_rdata(?Malmo,Rent,NoRooms);
-	"Stockholm" ->
-	     get_rdata(?Stockholm,Rent,NoRooms);
+	"Goteborg" ->
+	    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,List}]}} = get_rdata(?Gothenburg,Rent,NoRooms),
+	    process_rlist(List);
+	"Malmo" ->
+	    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,List}]}} = get_rdata(?Malmo,Rent,NoRooms),
+	    process_rlist(List);
+	%%"Stockholm" ->
+	%%    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,List}]}} = get_rdata(?Stockholm,Rent,NoRooms),
+	%%    process_rlist(List);
+	"Any" ->
+	    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,List}]}} = get_rdata(?Gothenburg,Rent,NoRooms),
+	    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,Listm}]}} = get_rdata(?Malmo,Rent,NoRooms),
+	    process_rlist(lists:append(List,Listm));
 	_ ->
 	    []
 %%	    {error,"feature not available yet"}
 %%	    "Ooo Krishna we didn't implement it yet"
     end.
+
+%% Discription: To stripdown JSON document notation
+%% @private
+process_rlist([])->
+    [];
+process_rlist(List) ->
+    process_rlist(List,[]).
+
+process_rlist([],AccList)->
+    AccList;
+process_rlist([H|T],AccList) ->
+    {_,[_,_,{_,{_,List}}]} = H,
+   process_rlist(T,[{binary:bin_to_list(proplists:get_value(<<"Adress">>,List,<<"undefined">>)),
+    proplists:get_value(<<"Rooms">>,List,"undefined"),
+    binary:bin_to_list(proplists:get_value(<<"District">>,List,<<"undefined">>)),
+    proplists:get_value(<<"Rent">>,List,"undefined")}|AccList]).
 
 
 %% @Key -> {City,Rent,NoRooms}
@@ -171,29 +200,40 @@ get_sdata(City,MaxRent,Price,NoRooms)->
 	    []
     end.
 
-get_rdata(City,Rent,NoRooms) when Rent>6000,Rent<12000,NoRooms>3->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId612i,[]);
-get_rdata(City,Rent,NoRooms) when Rent>6000,Rent<12000,NoRooms==1->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId6121,[]);
-get_rdata(City,Rent,NoRooms) when Rent>6000,Rent<12000,NoRooms==2->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId6122,[]);
-get_rdata(City,Rent,NoRooms) when Rent>6000,Rent<12000,NoRooms==3->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId6123,[]);
-get_rdata(City,Rent,_NoRooms) when Rent>6000,Rent<12000->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId612,[]);
 
 
-get_rdata(City,Rent,NoRooms) when Rent>0,Rent<3000,NoRooms>3->
+get_rdata(City,Rent,NoRooms) when Rent>0,Rent<3001,NoRooms>3->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId03i,[]);
-get_rdata(City,Rent,NoRooms) when Rent>0,Rent<3000,NoRooms==1->
+get_rdata(City,Rent,NoRooms) when Rent>0,Rent<3001,NoRooms==1->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId031,[]);
-get_rdata(City,Rent,NoRooms) when Rent>0,Rent<3000,NoRooms==2->
+get_rdata(City,Rent,NoRooms) when Rent>0,Rent<3001,NoRooms==2->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId032,[]);
-get_rdata(City,Rent,NoRooms) when Rent>0,Rent<3000,NoRooms==3->
+get_rdata(City,Rent,NoRooms) when Rent>0,Rent<3001,NoRooms==3->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId033,[]);
-get_rdata(City,Rent,_NoRooms) when Rent>0,Rent<3000->
+get_rdata(City,Rent,_NoRooms) when Rent>0,Rent<3001->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId03,[]);
 
+get_rdata(City,Rent,NoRooms) when Rent>3000,Rent<6001,NoRooms>3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId36i,[]);
+get_rdata(City,Rent,NoRooms) when Rent>3000,Rent<6001,NoRooms==1->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId361,[]);
+get_rdata(City,Rent,NoRooms) when Rent>3000,Rent<6001,NoRooms==2->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId362,[]);
+get_rdata(City,Rent,NoRooms) when Rent>3000,Rent<6001,NoRooms==3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId363,[]);
+get_rdata(City,Rent,_NoRooms) when Rent>3000,Rent<6001->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId36,[]);
+
+get_rdata(City,Rent,NoRooms) when Rent>6000,Rent<12001,NoRooms>3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId612i,[]);
+get_rdata(City,Rent,NoRooms) when Rent>6000,Rent<12001,NoRooms==1->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId6121,[]);
+get_rdata(City,Rent,NoRooms) when Rent>6000,Rent<12001,NoRooms==2->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId6122,[]);
+get_rdata(City,Rent,NoRooms) when Rent>6000,Rent<12001,NoRooms==3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId6123,[]);
+get_rdata(City,Rent,_NoRooms) when Rent>6000,Rent<12001->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId612,[]);
 
 get_rdata(City,Rent,NoRooms) when Rent>12000,NoRooms>3->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId12i,[]);
@@ -206,17 +246,18 @@ get_rdata(City,Rent,NoRooms) when Rent>12000,NoRooms==3->
 get_rdata(City,Rent,_NoRooms) when Rent>12000->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId12,[]);
 
+get_rdata(City,_Rent,NoRooms) when NoRooms>3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewIdi,[]);
+get_rdata(City,_Rent,NoRooms) when NoRooms==1->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId1,[]);
+get_rdata(City,_Rent,NoRooms) when NoRooms==2->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId2,[]);
+get_rdata(City,_Rent,NoRooms) when NoRooms==3->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId3,[]);
 
-get_rdata(City,Rent,NoRooms) when Rent>3000,Rent<6000,NoRooms>3->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId36i,[]);
-get_rdata(City,Rent,NoRooms) when Rent>3000,Rent<6000,NoRooms==1->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId361,[]);
-get_rdata(City,Rent,NoRooms) when Rent>3000,Rent<6000,NoRooms==2->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId362,[]);
-get_rdata(City,Rent,NoRooms) when Rent>3000,Rent<6000,NoRooms==3->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId363,[]);
-get_rdata(City,Rent,_NoRooms) when Rent>3000,Rent<6000->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId36,[]).
+get_rdata(City,_Rent,_NoRooms) ->
+    get_alldocs(City).
+
 
 
 %%@private
