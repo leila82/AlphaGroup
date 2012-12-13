@@ -15,15 +15,16 @@
 
 %% Decodes JSON notated strings in to a list of JSON objects
 %decode_string()-> %% test
+
 decode_string(Json_string)->
- case   mochijson3:decode(Json_string) of
+ case catch mochijson3:decode(Json_string) of
      {invalid_json,_} ->
-	 io:format("Please check the invalid data input of JSON string in decode_string");
+	 exit("invalid data input of JSON string in decode_string");
      {struct,[_,_,{_,List},_,_,_]} ->
 	 process_list(List,[]);
      {[_,_,{_,List},_,_,_]} ->
 	 process_list(List,[])
-
+	     
  end.
 
 

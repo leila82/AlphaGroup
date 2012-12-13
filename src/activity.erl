@@ -5,6 +5,11 @@
 %-import("../src/boplats.erl",[main/0]).
 -define(DB_IP,"127.0.0.1"). %% Data base IP adress
 -define(DB_PN,"5984"). %% Data base Port Number
+
+-define(Gothenburg,"gothenburg").
+-define(Malmo,"malmo").
+-define(Stockholm,"stockholm").
+
 -compile(export_all).
 
 %% This module is for yaws.conf file to include in runmod.
@@ -30,13 +35,23 @@
 
 %%Spawn register needed to be done to use receive thingy
 start()->
-    case lists:member(registered(),alpha_activity) of
+    update_database(),
+    start(0).
+
+start(Num) when Num <2 ->
+    case lists:member(alpha_activity,registered()) of
 	true ->
-	    alpha_activity ! {stop,user},
-	    start();
+	 catch  alpha_activity ! {stop,user},
+	    start(Num+1);
 	false ->
 	    register(alpha_activity,spawn(?MODULE,loop,[]))
-    end.
+    end;
+start(_) ->
+    throw("Application Error: an AH0bact001 tag is thrown").
+
+stop()->
+    catch  alpha_activity ! {stop,user},
+    io:format("hello").
 
 loop()->
     receive 
@@ -45,7 +60,8 @@ loop()->
 	    loop();
 	{stop,user}->
 	    ok
-    after 86400000 ->
+%%       after 60000 ->  %%test
+    after 86400000 -> 
 	    get_and_put_data(),
 	    loop()
     end.
@@ -62,42 +78,18 @@ loop()->
 
 %% Future implementations, should return all the values with no duplicates.
 get_and_put_data()->
-   %% L1 = alpha_extract_M:download(), %% Expected to return a list of records rental [Malmo]
-    L2 = boplats:main(), %% Expected to return a list of records rental [Gothenburg] 
-   %%  http_req:make_request("Göteborg",100).
-  %% BList = lists:append(L1,L2),
-   %% AList = lists:append(L3,BList),
-  %%  push_to_db(BList).
-    push_to_db(L2).
-%%    d_push(L2,[]).
+    data_base:delete_database(?Malmo),
+    spawn(data_base,compact_database,[?Malmo]),
+    data_base:delete_database(?Gothenburg),
+    spawn(data_base,compact_database,[?Gothenburg]),
+  %% Expected to return a list of records rental [Malmo]
+  %% Expected to return a list of records rental [Gothenburg]
+    spawn(?MODULE,push_to_db,[?Malmo,alpha_extract_M:download()]),
+    spawn(?MODULE,push_to_db,[?Gothenburg,boplats:main()]).
 
-
-d_push([],List)->
-    List;
-
-d_push([H|_T],_List) ->
-    
-    Rent = H#rental.rent,
-    Rooms = H#rental.rooms,
-    Area = H#rental.area,
-    Adress = H#rental.address,
-    District = H#rental.district,
-    _Doc = [{<<"Adress">>, Adress},
-	   {<<"District">>, District},
-	   {<<"Rent">>, Rent},
-	   {<<"Rooms">>, Rooms},
-	    {<<"Area">>, Area}],
-    unicode:characters_to_binary(District,latin1,utf8).
-						%    unicode:bom_to_encoding(list_to_binary(District)).
-						%    District.
-
-						%erlang_couchdb:create_document({"127.0.0.1", 5984}, "proto_v1", Doc).
-						%        d_push(T,[Doc|List]).
-   
-
-push_to_db([])->
+push_to_db(_DB_Name,[])->
     ok;
-push_to_db([H|T]) ->
+push_to_db(DB_Name,[H|T]) ->
     Rent = H#rental.rent,
     Rooms = H#rental.rooms,
     Area = H#rental.area,
@@ -108,8 +100,8 @@ push_to_db([H|T]) ->
 	   {<<"Rent">>, Rent},
 	   {<<"Rooms">>, Rooms},
 	   {<<"Area">>, Area}],
-    erlang_couchdb:create_document({"127.0.0.1", 5984}, "gothenburg", Doc),
-    push_to_db(T).
+    data_base:create_doc(DB_Name,Doc),
+    push_to_db(DB_Name,T).
 
 
 %%     Rent = list_to_binary(integer_to_list(H#rental.rent)),

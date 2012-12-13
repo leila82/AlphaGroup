@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author lengor <admin@dhcp-232-174.nomad.chalmers.se>
+%%% @authors Gokul S Evuri, Sadhi MS Khan
 %%% @copyright (C) 2012, lengor
 %%% @doc
 %%%
@@ -7,26 +7,56 @@
 %%% Created : 10 Oct 2012 by lengor <admin@dhcp-232-174.nomad.chalmers.se>
 %%%-------------------------------------------------------------------
 
--module(http_req).
+
+-module(booli).
 
 -include_lib("proper/include/proper.hrl").
 %-include_lib("eqc/include/eqc.hrl").
 
 -define(CallerID,"alpha").
 -define(PrivateKey,"tjmzCFRyi8gGsjqEqiICoo02qUmhR6Z2HGrNHNcF").
+%% Alternative caller ID
+-define(CallerID_Alt,"alpha_alt").
+%% Alternative Private Key
+-define(PrivateKey_Alt,"56DXeQL1yNThNC4UAlNTogGBwrj0lc4auBtx13DM").
+
 %-define(ANList,[48,49,50,51,52,53,54,55,56,57,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122]).
 -define(ANList,[48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122]).
 -compile(export_all).
 
 %start(_Place,_NoObjects)-> %% Test
-make_request(Place,No_Objects)->
+make_request(alt,No_Objects,City,MaxRentA,PriceA,NoRoomsA)->
+    case make_request(?CallerID_Alt,?PrivateKey_Alt,No_Objects,City,MaxRentA,PriceA,NoRoomsA) of
+	"FAILURE_INVALID_HASH - Error in supplied hash." ->
+	    exit("Application Error: an AH0bdat004 tag is thrown");
+	"FAILURE_NOT_UNIQUE - Unique parameter has already been used in a recent previous request." ->
+	    throw({exception,"not_Unique_execption"});
+	Data ->
+	    Data
+    end.
+
+make_request(No_Objects,City,MaxRentA,PriceA,NoRoomsA)->
+    case make_request(?CallerID,?PrivateKey,No_Objects,City,MaxRentA,PriceA,NoRoomsA) of
+	"FAILURE_INVALID_HASH - Error in supplied hash." ->
+	    exit("Application Error: an AH0bdat004 tag is thrown");
+	"FAILURE_NOT_UNIQUE - Unique parameter has already been used in a recent previous request." ->
+	    make_request(alt,No_Objects,City,MaxRentA,PriceA,NoRoomsA);
+	Data ->
+	    Data
+    end.
+
+
+make_request(CallerID,PrivateKey,No_Objects,City,MaxRentA,PriceA,NoRoomsA)->
     ensure_inets(),
+    MaxRent = integer_to_list(MaxRentA),
+    Price = integer_to_list(PriceA),
+    NoRooms = integer_to_list(NoRoomsA),
     Unique = get_Unique(),
     Time = get_time(),
     NoObjects = integer_to_list(No_Objects),
-    Hash_Str = lists:append(?CallerID, lists:append(integer_to_list(Time),lists:append(?PrivateKey,Unique))),
+    Hash_Str = lists:append(CallerID, lists:append(integer_to_list(Time),lists:append(PrivateKey,Unique))),
     <<Hash:160/integer>> = get_hash(Hash_Str),
-    {ok,{_Hmm,_Hmmm,Data}} = req("http://api.booli.se/listings",[{"q",Place},{"limit",NoObjects},{"offset","0"},{"callerId",?CallerID},{"unique",Unique},{"time",integer_to_list(Time)},{"hash",bin_hex(Hash)}]),
+    {ok,{_,_,Data}} = req("http://api.booli.se/listings",[{"q",City},{"limit",NoObjects},{"offset","0"},{"callerId",CallerID},{"maxRent",MaxRent},{"maxRooms",NoRooms},{"maxPrice",Price},{"unique",Unique},{"time",integer_to_list(Time)},{"hash",bin_hex(Hash)}]),
     %%     {ok,{_Hmm,_Hmmm,Data}} = req("http://api.booli.se/listings",[{"q","nacka"},{"limit","3"},{"offset","0"},{"callerId",?CallerID},{"unique",Unique},{"time",integer_to_list(Time)},{"hash",bin_hex(Hash)}]), %% Test
    Data.
 
