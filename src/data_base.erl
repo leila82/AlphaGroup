@@ -24,6 +24,8 @@
 -define(Malmos,"malmo_s").
 -define(Stockholms,"stockholm_s").
 
+-define(ViewIdall,"all").
+
 -define(ViewId612,"612").
 -define(ViewId612i,"612i").
 -define(ViewId6121,"6121").
@@ -140,10 +142,10 @@ get_rdata({City,Rent,NoRooms})->
 	"Malmo" ->
 	    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,List}]}} = get_rdata(?Malmo,Rent,NoRooms),
 	    process_rlist(List);
-	%%"Stockholm" ->
-	%%    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,List}]}} = get_rdata(?Stockholm,Rent,NoRooms),
-	%%    process_rlist(List);
-	"Any" ->
+	"Stockholm" ->
+	    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,List}]}} = get_rdata(?Stockholm,Rent,NoRooms),
+	    process_rlist(List);
+	"All" ->
 	    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,List}]}} = get_rdata(?Gothenburg,Rent,NoRooms),
 	    {json,{struct,[{<<"total_rows">>,_},{<<"offset">>,_},{<<"rows">>,Listm}]}} = get_rdata(?Malmo,Rent,NoRooms),
 	    process_rlist(lists:append(List,Listm));
@@ -164,7 +166,7 @@ process_rlist([],AccList)->
     AccList;
 process_rlist([H|T],AccList) ->
     {_,[_,_,{_,{_,List}}]} = H,
-   process_rlist(T,[{binary:bin_to_list(proplists:get_value(<<"Adress">>,List,<<"undefined">>)),
+    process_rlist(T,[{binary:bin_to_list(proplists:get_value(<<"Adress">>,List,<<"undefined">>)),
     proplists:get_value(<<"Rooms">>,List,"undefined"),
     binary:bin_to_list(proplists:get_value(<<"District">>,List,<<"undefined">>)),
     proplists:get_value(<<"Rent">>,List,"undefined")}|AccList]).
@@ -201,6 +203,8 @@ get_sdata(City,MaxRent,Price,NoRooms)->
     end.
 
 
+get_rdata(City,"0","0") ->
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewIdall,[]);
 
 get_rdata(City,Rent,NoRooms) when Rent>0,Rent<3001,NoRooms>3->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId03i,[]);
@@ -253,10 +257,7 @@ get_rdata(City,_Rent,NoRooms) when NoRooms==1->
 get_rdata(City,_Rent,NoRooms) when NoRooms==2->
     erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId2,[]);
 get_rdata(City,_Rent,NoRooms) when NoRooms==3->
-    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId3,[]);
-
-get_rdata(City,_Rent,_NoRooms) ->
-    get_alldocs(City).
+    erlang_couchdb:invoke_view({?DB_IP,?DB_PN},City,?ViewClass,?ViewId3,[]).
 
 
 

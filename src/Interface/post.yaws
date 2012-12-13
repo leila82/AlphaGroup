@@ -130,118 +130,99 @@
 	  </div>
 	  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	  <erl>
-	  out(A)->
-
-%out_test(A)->
-	  List = yaws_api:parse_post(A),
-	  City =  proplists:get_value("City",List),		    
-	  
-	  RentLim = proplists:get_value("Rent",List),
-%%case proplists:get_value("Rooms",List,"999") of "Any" -> "999"; _Other->_Other end
-	  NoRooms =  list_to_integer(proplists:get_value("Rooms",List,"999")),
+out(A)->
+    List = yaws_api:parse_post(A),
+    City =  proplists:get_value("City",List),		    	  
+    RentLim = proplists:get_value("Rent",List),
+    NoRooms =  list_to_integer(proplists:get_value("Rooms",List,"999")),
+    
 	  case RentLim of 
-	  "1" ->
+	      "1" ->
 	       	  ObjList = data_base:get_rdata({City,2999,NoRooms}),
-	       %	  [{AdressL,Rooms1,AreaL,Rent1}|T] = ObjList ,
-		%  Adress1 = unicode:characters_to_binary(AdressL,latin1,utf8),
-		%  Area1 = unicode:characters_to_binary(AreaL,latin1,utf8),  
-		generate_table(ObjList);
-		%   P = <<"AdressssP">>, 
-		%  io:format("~w~n~w~n~w~n~w~n",[Adress1,Rooms1,Area1,Rent1]),
-%{ehtml, {table,[{border,"2"},
-%                      {width,"100%"},
-%                      {cellpadding,"10"},
-%                      {cellspacing,"5"}],
-%                     [{tr,[],
-%                          [{td,[],{b,[],"Adress"}},
-%                           {td,[],{b,[],"Room"}},
-%                           {td,[],{b,[],"Area"}},
-%                           {td,[],{b,[],"Price"}} ]},
-%                      {tr,[],
-%                          [{td,[],Adress1},
-%                           {td,[],"Rooms1"},
-%                           {td,[],"Area1"},
-%                           {td,[],"Rent1"}]} ]}};  %%
-
-
-	  "2"->
-	   	 ObjList = data_base:get_rdata({City,5999,NoRooms}),
+		  generate_table(ObjList);
+	      
+	      "2"->
+		  ObjList = data_base:get_rdata({City,5999,NoRooms}),
 	      	 generate_table(ObjList);
-		 
-	  "3"->
-	   	 ObjList = data_base:get_rdata({City,7999,NoRooms}),
-	      	 generate_table(ObjList);
+	      
+	      "3"->
+		  ObjList = data_base:get_rdata({City,7999,NoRooms}),
+		  generate_table(ObjList);
+	      
+	      "4"->
+		  ObjList = data_base:get_rdata({City,12002,NoRooms}),
+		  generate_table(ObjList);
+	      
+	      "5"->
+		  ObjList = data_base:get_rdata({City,12002,NoRooms}),
+		  generate_table(ObjList);
+	      
+	      "0" ->
+		  ObjList = data_base:get_rdata({City,"Any",NoRooms}),
+		  generate_table(ObjList);
+	      
+	      _->
+		  {ehtml,"Please Make a valid search"}
+	  end.
 
-	"4"->
-	   	 ObjList = data_base:get_rdata({City,12002,NoRooms}),
-	      	 generate_table(ObjList);
-
-	  
-	  "Any" ->
-	  	ObjList = data_base:get_rdata({City,"Any",NoRooms}),
-	      	 generate_table(ObjList);
-
-	_->
-		 {ehtml,"Please Make a valid search"}
-	      end.
-	 
-	generate_table(ObjList)->
-	case length(ObjList)<11 of
+generate_table(ObjList)->
+    case length(ObjList)<11 of
 	true ->
-		TRS =  generate_trs(ObjList,[]),
-		{ehtml, {table,[{border,"2"},
-                	      {width,"100%"},
-                      	      {cellpadding,"10"},
-                      	      {cellspacing,"5"}],
-		      	     [ 
-			     {tr,[],
-                             [{td,[],{b,[],"Adress"}},
-                             {td,[],{b,[],"Room"}},
-                             {td,[],{b,[],"Area"}},
-                             {td,[],{b,[],"Price"}} ]}|TRS]}};
-
+	    TRS =  generate_trs(ObjList,[]),
+	    {ehtml, {table,[{border,"2"},
+			    {width,"100%"},
+			    {cellpadding,"10"},
+			    {cellspacing,"5"}],
+		     [ 
+		       {tr,[],
+			[{td,[],{b,[],"Adress"}},
+			 {td,[],{b,[],"Room"}},
+			 {td,[],{b,[],"Area"}},
+			 {td,[],{b,[],"Price"}} ]}|TRS]}};
 	
-	%	  [{AdressL,RoomsL,AreaL,RentL}|T] = ObjList ,
-	%	  Adress1 = unicode:characters_to_binary(AdressL,latin1,utf8),
-	%	  Rooms1 = list_to_binary(integer_to_list(RoomsL)),
-	%	  Area1 = unicode:characters_to_binary(AreaL,latin1,utf8),
-	%	  Rent1 = list_to_binary(integer_to_list(RentL)),
-	%	{ehtml, {table,[{border,"2"},
-        %              {width,"100%"},
-        %              {cellpadding,"10"},
-        %              {cellspacing,"5"}],
-        %             [{tr,[],
-        %                  [{td,[],{b,[],"Adress"}},
-        %                   {td,[],{b,[],"Room"}},
-        %                   {td,[],{b,[],"Area"}},
-        %                   {td,[],{b,[],"Price"}} ]},
-        %              {tr,[],
-        %                  [{td,[],Adress1},
-        %                   {td,[],Rooms1},
-        %                   {td,[],Area1},
-        %                   {td,[],Rent1}]} ]}};
 	false ->
-	     
-	{List,_} = lists:split(10,ObjList),
-	generate_trs(List,[])
-	
-end.	  	
+	    
+	    {List,_} = lists:split(10,ObjList),
+	    TRS = generate_trs(List,[]),
+	    {ehtml, {table,[{border,"2"},
+			    {width,"100%"},
+			    {cellpadding,"10"},
+			    {cellspacing,"5"}],
+		     [ 
+		       {tr,[],
+			[{td,[],{b,[],"Adress"}},
+			 {td,[],{b,[],"Room"}},
+			 {td,[],{b,[],"Area"}},
+			 {td,[],{b,[],"Price"}} ]}|TRS]}}		
+    end.	  	
 
 
 generate_trs([],AccList)->
-		AccList;
+    AccList;
 
 generate_trs([{AdressL,RoomsL,AreaL,RentL}|T],AccList)->
-		  Adress = unicode:characters_to_binary(AdressL,latin1,utf8),
-		  Rooms = list_to_binary(integer_to_list(RoomsL)),
-		  Area = unicode:characters_to_binary(AreaL,latin1,utf8),
-		  Rent = list_to_binary(integer_to_list(RentL)),
-	generate_trs(T,	[{tr,[],
-                          [{td,[],{b,[],Adress}},
-                           {td,[],{b,[],Rooms}},
-                           {td,[],{b,[],Area}},
-                           {td,[],{b,[],Rent}}]}| AccList]).
-
+    case is_list(AdressL) of
+	false ->
+	    Adress = binary:bin_to_list(unicode:characters_to_binary(AdressL,latin1,utf8)),
+	    Rooms = list_to_binary(integer_to_list(RoomsL)),
+	    Area = binary:bin_to_list(unicode:characters_to_binary(AreaL,latin1,utf8)),
+	    Rent = list_to_binary(integer_to_list(RentL)),
+	    generate_trs(T,	[{tr,[],
+				  [{td,[],{b,[],Adress}},
+				   {td,[],{b,[],Rooms}},
+				   {td,[],{b,[],Area}},
+				   {td,[],{b,[],Rent}}]}| AccList]);
+	true->
+	    Adress = unicode:characters_to_list(list_to_binary(AdressL)),
+	    Rooms = list_to_binary(integer_to_list(RoomsL)),
+	    Area = unicode:characters_to_list(list_to_binary(AreaL)),
+	    Rent = list_to_binary(integer_to_list(RentL)),
+	    generate_trs(T,	[{tr,[],
+				  [{td,[],{b,[],Adress}},
+				   {td,[],{b,[],binary:bin_to_list(Rooms)}},
+				   {td,[],{b,[],Area}},
+				   {td,[],{b,[],binary:bin_to_list(Rent)}}]}| AccList])
+    end.
 
 	  </erl>
           <p style="font-family: Verdana,arial,sans-serif; font-size: 10px;">

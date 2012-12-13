@@ -1,4 +1,4 @@
--module(stockholm).
+-module(stockholm_extract).
 %-export([getEtl/0]).
 %% author @ Sarah Jamil,
 %%  extract Apartments Data from "http://www.bostaddirekt.com/Private/default.aspx?custType=0".
@@ -68,24 +68,26 @@ getData(TableBuff,MiniTable,TextEnd,LimitedText,TableEndP)->
     Rilimit3=string:substr(Rilimit2,AddressEnd+5,TextEnd),
     RoomStart=string:str(Rilimit3,"<td class=\"object\" align=\"center\">")+34,
     RoomEnd=string:str(Rilimit3,"</td>"),
-    Room=string:substr(Rilimit3,RoomStart,(RoomEnd-RoomStart)),
+    Room=eliminate(string:substr(Rilimit3,RoomStart,(RoomEnd-RoomStart))),
 
 %%extract the area.
     Rilimit4=string:substr(Rilimit3,RoomEnd+5,TextEnd),
     AreaStart=string:str(Rilimit4,"<td class=\"object\">")+21,
     AreaEnd=string:str(Rilimit4,"</td>"),
-    Area=string:substr(Rilimit4,AreaStart,(AreaEnd-AreaStart)),
+    Area=eliminate(string:substr(Rilimit4,AreaStart,(AreaEnd-AreaStart))),
 
 %%extract the rent. 
     Rilimit5=string:substr(Rilimit4,AreaEnd+5,TextEnd),
     RentStart=string:str(Rilimit5,"<td class=\"object\">")+21,
     RentEnd=string:str(Rilimit5,"</td>"),
-    Rent=string:substr(Rilimit5,RentStart,(RentEnd-RentStart)), 
+    Rent=eliminate(string:substr(Rilimit5,RentStart,(RentEnd-RentStart))), 
  
 
   Data=#rental{district="Stockholm",
-      address= eliminate(Address),rooms =eliminate(Room),
-      area= eliminate(Area),rent=eliminate(Rent)},
+      address= eliminate(Address),
+     rooms =case catch string:to_float(Room) of {error,no_float} -> trunc(list_to_integer(Room)); {'EXIT',_} -> trunc(list_to_integer(Room)); {Num,_} -> trunc(Num) end,
+      area= Area,
+      rent=case catch string:to_float(Rent) of {error,no_float} -> trunc(list_to_integer(Rent)); {'EXIT',_} -> trunc(list_to_integer(Rent)); {Num,_} -> trunc(Num) end},
 
 %%recursive to get other apartments
   RelimitedText=string:sub_string(LimitedText,TableEndP,TextEnd),

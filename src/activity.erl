@@ -50,8 +50,8 @@ start(_) ->
     throw("Application Error: an AH0bact001 tag is thrown").
 
 stop()->
-    catch  alpha_activity ! {stop,user},
-    io:format("hello").
+    catch  alpha_activity ! {stop,user}.
+%    io:format("hello").
 
 loop()->
     receive 
@@ -80,28 +80,48 @@ loop()->
 get_and_put_data()->
     data_base:delete_database(?Malmo),
     spawn(data_base,compact_database,[?Malmo]),
+        data_base:delete_database(?Stockholm),
+    spawn(data_base,compact_database,[?Stockholm]),
     data_base:delete_database(?Gothenburg),
     spawn(data_base,compact_database,[?Gothenburg]),
   %% Expected to return a list of records rental [Malmo]
   %% Expected to return a list of records rental [Gothenburg]
-    spawn(?MODULE,push_to_db,[?Malmo,alpha_extract_M:download()]),
-    spawn(?MODULE,push_to_db,[?Gothenburg,boplats:main()]).
+    spawn(?MODULE,push_to_db,[?Malmo,alpha_extract_M:download(),"m"]),
+    spawn(?MODULE,push_to_db,[?Gothenburg,boplats:main(),"g"]),
+    spawn(?MODULE,push_to_db,[?Stockholm,stockholm_extract:getEtl(),"s"]).
 
-push_to_db(_DB_Name,[])->
+push_to_db(_DB_Name,[],_CK)->
     ok;
-push_to_db(DB_Name,[H|T]) ->
+push_to_db(DB_Name,[H|T],CK) ->       
     Rent = H#rental.rent,
     Rooms = H#rental.rooms,
     Area = H#rental.area,
     Adress = H#rental.address,
     District = H#rental.district,
+ case CK of
+     "m" ->
+	     Doc = [{<<"Adress">>,  list_to_binary(recreate(Adress,[]))},
+	   {<<"District">>, list_to_binary(recreate(District,[]))},
+	   {<<"Rent">>, Rent},
+	   {<<"Rooms">>, Rooms},
+	   {<<"Area">>, Area}];
+
+     _->
     Doc = [{<<"Adress">>,  unicode:characters_to_binary(Adress,latin1,utf8)},
 	   {<<"District">>, unicode:characters_to_binary(District,latin1,utf8)},
 	   {<<"Rent">>, Rent},
 	   {<<"Rooms">>, Rooms},
-	   {<<"Area">>, Area}],
+	   {<<"Area">>, Area}]
+ end,
     data_base:create_doc(DB_Name,Doc),
-    push_to_db(DB_Name,T).
+    push_to_db(DB_Name,T,CK).
+
+
+recreate([],Acc)->
+    lists:reverse(Acc);
+recreate([H|T],Acc)->
+    A = H,
+    recreate(T,[A|Acc]).
 
 
 %%     Rent = list_to_binary(integer_to_list(H#rental.rent)),
