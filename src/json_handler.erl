@@ -23,8 +23,9 @@ decode_string(Json_string)->
      {struct,[_,_,{_,List},_,_,_]} ->
 	 process_list(List,[]);
      {[_,_,{_,List},_,_,_]} ->
-	 process_list(List,[])
-	     
+	 process_list(List,[]);
+     {[_,_,_,_,_,_,{<<"message">>,<<"AREA_NOT_FOUND">>}]}->     
+	 []     
  end.
 
 
@@ -47,24 +48,28 @@ process_object(Obj)->
     %%
     {ListAdd} = proplists:get_value(<<"address">>,
 				    LocList),
-    {ListReg} = proplists:get_value(<<"region">>,
-				    LocList),
-    {ListAdd} = proplists:get_value(<<"address">>,
-				    LocList),
-    {ListReg} = proplists:get_value(<<"region">>,
-				    LocList),
+%    {ListReg} = proplists:get_value(<<"region">>,
+%				    LocList),
+%    {ListAdd} = proplists:get_value(<<"address">>,
+%				    LocList),
+%    {ListReg} = proplists:get_value(<<"region">>,
+%				    LocList),
+    
+    #buyrental{rooms = proplists:get_value(<<"rooms">>,
+					   Obj,<<"undefined">>),
+	       area = proplists:get_value(<<"livingArea">>,
+					  Obj,<<"undefined">>),
+	       price = case catch binary:bin_to_list(proplists:get_value(<<"listPrice">>,Obj,<<"undefined">>)) of 
+			   {'EXIT',_} -> proplists:get_value(<<"listPrice">>,Obj,<<"undefined">>);
+			   Price -> Price end,
+	       hyra = proplists:get_value(<<"rent">>,
+					  Obj,<<"undefined">>),
+	       address = binary:bin_to_list(proplists:get_value(<<"streetAddress">>,
+								ListAdd,<<"undefined">>)),	
+	       district = binary:bin_to_list(proplists:get_value(<<"city">>,
+								 ListAdd,<<"undefined">>))}.
 
-#rental{rooms = proplists:get_value(<<"rooms">>,
-				    Obj,<<"undefined">>),
-	area = proplists:get_value(<<"livingArea">>,
-				   Obj,<<"undefined">>),
-	rent = proplists:get_value(<<"rent">>,
-				   Obj,<<"undefined">>),
-	address = binary:bin_to_list(proplists:get_value(<<"streetAddress">>,
-							 ListAdd,<<"undefined">>)),	
-	district = binary:bin_to_list(proplists:get_value(<<"city">>,
-							  ListAdd,<<"undefined">>))}.
-
+      
 
 
 %% process_object(Obj)->

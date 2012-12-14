@@ -56,8 +56,8 @@
                           City:</label><select name="City">
                           <option value=All>All</option>
                           <option value=Stockholm>Stockholm</option>
-                          <option value=Goteborg>Goteborg</option>
-                          <option value=Malmo>Malmo</option>
+                          <option value=Goteborg>Göteborg</option>
+                          <option value=Malmo>Malmö</option>
                       </select></div>
                       
                       <div class="form1">
