@@ -19,7 +19,8 @@
 decode_string(Json_string)->
  case catch mochijson3:decode(Json_string) of
      {invalid_json,_} ->
-	 exit("invalid data input of JSON string in decode_string");
+	 io:format("invalid data input of JSON string in decode_string"),
+	 [];
      {struct,[_,_,{_,List},_,_,_]} ->
 	 process_list(List,[]);
      {[_,_,{_,List},_,_,_]} ->

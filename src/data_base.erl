@@ -12,6 +12,8 @@
 %% View id need to be defined according to the quiry made so all the maps needed to be listed here.
 %% Test
 
+%-define(testing, true).
+
 -define(NoObjects,200).
 
 -define(DD_Repo,"repo_dd"). %% repository for design document
@@ -56,24 +58,27 @@
 -define(ViewId3,"3").
 
 
--define(Limit1LS,"undefined").
--define(Limit1HS,"undefined").
--define(Limit2LS,"undefined").
--define(Limit2HS,"undefined").
--define(Limit3LS,"undefined").
--define(Limit3HS,"undefined").
--define(Limit4LS,"undefined").
--define(Limit4HS,"undefined").
--define(Limit5LS,"undefined").
--define(Limit5HS,"undefined").
 
--define(Limit1LR,0).
--define(Limit1HR,3000).
--define(Limit2LR,3000).
--define(Limit2HR,6000).
--define(Limit3LR,6000).
--define(Limit3HR,12000).
--define(Limit4LR,12000).
+
+
+%% -define(Limit1LS,"undefined").
+%% -define(Limit1HS,"undefined").
+%% -define(Limit2LS,"undefined").
+%% -define(Limit2HS,"undefined").
+%% -define(Limit3LS,"undefined").
+%% -define(Limit3HS,"undefined").
+%% -define(Limit4LS,"undefined").
+%% -define(Limit4HS,"undefined").
+%% -define(Limit5LS,"undefined").
+%% -define(Limit5HS,"undefined").
+
+%% -define(Limit1LR,0).
+%% -define(Limit1HR,3000).
+%% -define(Limit2LR,3000).
+%% -define(Limit2HR,6000).
+%% -define(Limit3LR,6000).
+%% -define(Limit3HR,12000).
+%% -define(Limit4LR,12000).
 %%-define(Limit4HR,"undefined"). %% Not being used in the current version
 %%-define(Limit5LR,"undefined"). %% Not being used in the current version
 %%-define(Limit5HR,"undefined"). %% Not being used in the current version

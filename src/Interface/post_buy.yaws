@@ -142,7 +142,7 @@
                 </div>
 <erl>
 
--include("../../include/alpha_records.hrl").
+
 out(A)->
 
 

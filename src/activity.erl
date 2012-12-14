@@ -10,6 +10,10 @@
 -define(Malmo,"malmo").
 -define(Stockholm,"stockholm").
 
+-define(Uppasalab,"uppasalab").
+-define(Malmob,"malmob").
+-define(Stockholmb,"stockholmb").
+
 -compile(export_all).
 
 %% This module is for yaws.conf file to include in runmod.
@@ -75,9 +79,8 @@ loop()->
 %%[Now]
 %% invokes all the modules functions which returns a list of records of objects and returns 
 %% A list with all the objects
-
-%% Future implementations, should return all the values with no duplicates.
 get_and_put_data()->
+%    spawn(?MODULE,get_and_put_bdata,[]),
     data_base:delete_database(?Malmo),
     spawn(data_base,compact_database,[?Malmo]),
         data_base:delete_database(?Stockholm),
@@ -122,6 +125,37 @@ recreate([],Acc)->
 recreate([H|T],Acc)->
     A = H,
     recreate(T,[A|Acc]).
+
+
+get_and_put_bdata()->
+     data_base:delete_database(?Malmob),
+    spawn(data_base,compact_database,[?Malmob]),
+        data_base:delete_database(?Stockholmb),
+    spawn(data_base,compact_database,[?Stockholmb]),
+    data_base:delete_database(?Uppasalab),
+    spawn(data_base,compact_database,[?Uppasalab]),
+  %% Expected to return a list of records rental [Malmo]
+  %% Expected to return a list of records rental [Gothenburg]
+    spawn(?MODULE,push_to_dbb,[?Malmob,json_handler:decode_string(booli:make_request(999,"Malmö"))]),
+    spawn(?MODULE,push_to_dbb,[?Uppasalab,json_handler:decode_string(booli:make_request(999,"Uppsala"))]),
+    spawn(?MODULE,push_to_dbb,[?Stockholmb,json_handler:decode_string(booli:make_request(999,"Stockholm"))]).
+
+push_to_dbb(_DB_Name,[])->
+    ok;
+push_to_dbb(DB_Name,[BuyRental|T]) ->
+    Rooms = BuyRental#buyrental.rooms,
+    Area = BuyRental#buyrental.area,
+    Price = BuyRental#buyrental.price,
+    Hyra = BuyRental#buyrental.hyra,
+    Adress = binary:bin_to_list(unicode:characters_to_binary(BuyRental#buyrental.address,latin1,utf8)),
+    Doc = [{<<"Adress">>,  list_to_binary(recreate(Adress,[]))},
+	   {<<"Rooms">>, Rooms},
+	   {<<"Area">>, Area},
+	   {<<"Price">>, Price},
+	   {<<"City">>, DB_Name},
+	   {<<"Hyra">>, Hyra}],
+    data_base:create_doc(DB_Name,Doc),
+    push_to_dbb(DB_Name,T).
 
 
 %%     Rent = list_to_binary(integer_to_list(H#rental.rent)),

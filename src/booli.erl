@@ -31,9 +31,11 @@
 make_request(alt,No_Objects,City,MaxRentA,PriceA,NoRoomsA)->
     case make_request(?CallerID_Alt,?PrivateKey_Alt,No_Objects,City,MaxRentA,PriceA,NoRoomsA) of
 	"FAILURE_INVALID_HASH - Error in supplied hash." ->
-	    exit("Application Error: an AH0bdat004 tag is thrown");
+	    io:format("Application Error: an AH0bdat004 tag is thrown"),
+	    [];
 	"FAILURE_NOT_UNIQUE - Unique parameter has already been used in a recent previous request." ->
-	    throw({exception,"not_Unique_execption"});
+	    io:format("not_Unique_execption"),
+	    [];
 	Data ->
 	    Data
     end.
@@ -47,6 +49,41 @@ make_request(No_Objects,City,MaxRentA,PriceA,NoRoomsA)->
 	Data ->
 	    Data
     end.
+
+
+make_request(alt,No_Objects,City)->
+    case make_request(?CallerID_Alt,?PrivateKey_Alt,No_Objects,City) of
+	"FAILURE_INVALID_HASH - Error in supplied hash." ->
+	    io:format("Application Error: an AH0bdat004 tag is thrown"),
+	    [];
+	"FAILURE_NOT_UNIQUE - Unique parameter has already been used in a recent previous request." ->
+	    io:format("not_Unique_execption"),
+	    [];
+	Data ->
+	    Data
+    end.
+
+make_request(No_Objects,City)->
+    case make_request(?CallerID,?PrivateKey,No_Objects,City) of
+	"FAILURE_INVALID_HASH - Error in supplied hash." ->
+	    exit("Application Error: an AH0bdat004 tag is thrown");
+	"FAILURE_NOT_UNIQUE - Unique parameter has already been used in a recent previous request." ->
+	    make_request(alt,No_Objects,City);
+	Data ->
+	    Data
+    end.
+
+
+make_request(CallerID,PrivateKey,No_Objects,City)->
+    ensure_inets(),
+    Unique = get_Unique(),
+    Time = get_time(),
+    NoObjects = integer_to_list(No_Objects),
+    Hash_Str = lists:append(CallerID, lists:append(integer_to_list(Time),lists:append(PrivateKey,Unique))),
+    <<Hash:160/integer>> = get_hash(Hash_Str),
+    {ok,{_,_,Data}} = req("http://api.booli.se/listings",[{"q",City},{"limit",NoObjects},{"offset","0"},{"callerId",CallerID},{"unique",Unique},{"time",integer_to_list(Time)},{"hash",bin_hex(Hash)}]),
+    %%     {ok,{_Hmm,_Hmmm,Data}} = req("http://api.booli.se/listings",[{"q","nacka"},{"limit","3"},{"offset","0"},{"callerId",?CallerID},{"unique",Unique},{"time",integer_to_list(Time)},{"hash",bin_hex(Hash)}]), %% Test
+   Data.
 
 
 make_request(CallerID,PrivateKey,No_Objects,City,MaxRentA,PriceA,NoRoomsA)->
