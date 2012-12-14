@@ -142,29 +142,33 @@
                 </div>
 <erl>
 
-
+-include("../../include/alpha_records.hrl").
 out(A)->
 
 
 %out_test(A)->
     List = yaws_api:parse_post(A),
     City =  proplists:get_value("City",List),		    	  
-    Price = list_to_integer(proplists:get_value("Price",List)),
-    Hyra = list_to_integer(proplists:get_value("Hyra",List)),
+    Price = list_to_integer(proplists:get_value("Price",List,"99999999")),
+    Hyra = list_to_integer(proplists:get_value("Hyra",List,"999999")),
     NoRooms =  list_to_integer(proplists:get_value("Room",List,"999")), 
 %	    ObjList = json_handler:decode_string(booli:make_request(10,City,0,1000000,NoRooms)),
-	    ObjList =case catch json_handler:decode_string(booli:make_request(10,City,Hyra,Price,NoRooms)) of
-			 {'EXIT',_}->
-			 [];
-			 AL ->
-			     AL
+	    ObjList = try json_handler:decode_string(booli:make_request(10,City,Hyra,Price,NoRooms)) of
+			 
+			 _AL->
+				_AL
+			catch
+			 _WE -> []
 		     end,
+%{ehtml,City}.
 	    generate_table(ObjList,City).
 
 
 generate_table(ObjList,City) ->
+%hello(ObjList,City)->
     case length(ObjList)<11 of
-	true ->		    
+	true ->		      
+	io:format("lessthan 11"),  
 	    TRS =  generate_trs(ObjList,City,[]),
 	    {ehtml, {table,[{border,"2"},
 			    {width,"100%"},
