@@ -1,0 +1,4 @@
+{application,alphagroup}.
+{packages,[]}.
+{modules,[all_data_to_db,alpha_extract_M,alphagroup_app,alphagroup_sup,
+          boplats,couch_db,ex_bopunkten,mymod,stockholm,to_web_server]}.

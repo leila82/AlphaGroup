@@ -1,0 +1,17 @@
+{application, alphagroup,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, ["alpha_extract_M",
+		"ex_bopunkten"
+		"boplats",
+		"alphagroup_app"
+		"alphagroup_sup",
+		"couch_db"]},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { alphagroup_app, []}},
+  {env, []}
+ ]}.
