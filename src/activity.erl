@@ -10,6 +10,10 @@
 -define(Malmo,"malmo").
 -define(Stockholm,"stockholm").
 
+-define(Uppasalab,"uppasalab").
+-define(Malmob,"malmob").
+-define(Stockholmb,"stockholmb").
+
 -compile(export_all).
 
 %% This module is for yaws.conf file to include in runmod.
@@ -50,8 +54,8 @@ start(_) ->
     throw("Application Error: an AH0bact001 tag is thrown").
 
 stop()->
-    catch  alpha_activity ! {stop,user},
-    io:format("hello").
+    catch  alpha_activity ! {stop,user}.
+%    io:format("hello").
 
 loop()->
     receive 
@@ -75,33 +79,83 @@ loop()->
 %%[Now]
 %% invokes all the modules functions which returns a list of records of objects and returns 
 %% A list with all the objects
-
-%% Future implementations, should return all the values with no duplicates.
 get_and_put_data()->
+%    spawn(?MODULE,get_and_put_bdata,[]),
     data_base:delete_database(?Malmo),
     spawn(data_base,compact_database,[?Malmo]),
+        data_base:delete_database(?Stockholm),
+    spawn(data_base,compact_database,[?Stockholm]),
     data_base:delete_database(?Gothenburg),
     spawn(data_base,compact_database,[?Gothenburg]),
   %% Expected to return a list of records rental [Malmo]
   %% Expected to return a list of records rental [Gothenburg]
-    spawn(?MODULE,push_to_db,[?Malmo,alpha_extract_M:download()]),
-    spawn(?MODULE,push_to_db,[?Gothenburg,boplats:main()]).
+    spawn(?MODULE,push_to_db,[?Malmo,alpha_extract_M:download(),"m"]),
+    spawn(?MODULE,push_to_db,[?Gothenburg,boplats:main(),"g"]),
+    spawn(?MODULE,push_to_db,[?Stockholm,stockholm_extract:getEtl(),"s"]).
 
-push_to_db(_DB_Name,[])->
+push_to_db(_DB_Name,[],_CK)->
     ok;
-push_to_db(DB_Name,[H|T]) ->
+push_to_db(DB_Name,[H|T],CK) ->       
     Rent = H#rental.rent,
     Rooms = H#rental.rooms,
     Area = H#rental.area,
     Adress = H#rental.address,
     District = H#rental.district,
+ case CK of
+     "m" ->
+	     Doc = [{<<"Adress">>,  list_to_binary(recreate(Adress,[]))},
+	   {<<"District">>, list_to_binary(recreate(District,[]))},
+	   {<<"Rent">>, Rent},
+	   {<<"Rooms">>, Rooms},
+	   {<<"Area">>, Area}];
+
+     _->
     Doc = [{<<"Adress">>,  unicode:characters_to_binary(Adress,latin1,utf8)},
 	   {<<"District">>, unicode:characters_to_binary(District,latin1,utf8)},
 	   {<<"Rent">>, Rent},
 	   {<<"Rooms">>, Rooms},
-	   {<<"Area">>, Area}],
+	   {<<"Area">>, Area}]
+ end,
     data_base:create_doc(DB_Name,Doc),
-    push_to_db(DB_Name,T).
+    push_to_db(DB_Name,T,CK).
+
+
+recreate([],Acc)->
+    lists:reverse(Acc);
+recreate([H|T],Acc)->
+    A = H,
+    recreate(T,[A|Acc]).
+
+
+get_and_put_bdata()->
+     data_base:delete_database(?Malmob),
+    spawn(data_base,compact_database,[?Malmob]),
+        data_base:delete_database(?Stockholmb),
+    spawn(data_base,compact_database,[?Stockholmb]),
+    data_base:delete_database(?Uppasalab),
+    spawn(data_base,compact_database,[?Uppasalab]),
+  %% Expected to return a list of records rental [Malmo]
+  %% Expected to return a list of records rental [Gothenburg]
+    spawn(?MODULE,push_to_dbb,[?Malmob,json_handler:decode_string(booli:make_request(999,"Malmö"))]),
+    spawn(?MODULE,push_to_dbb,[?Uppasalab,json_handler:decode_string(booli:make_request(999,"Uppsala"))]),
+    spawn(?MODULE,push_to_dbb,[?Stockholmb,json_handler:decode_string(booli:make_request(999,"Stockholm"))]).
+
+push_to_dbb(_DB_Name,[])->
+    ok;
+push_to_dbb(DB_Name,[BuyRental|T]) ->
+    Rooms = BuyRental#buyrental.rooms,
+    Area = BuyRental#buyrental.area,
+    Price = BuyRental#buyrental.price,
+    Hyra = BuyRental#buyrental.hyra,
+    Adress = binary:bin_to_list(unicode:characters_to_binary(BuyRental#buyrental.address,latin1,utf8)),
+    Doc = [{<<"Adress">>,  list_to_binary(recreate(Adress,[]))},
+	   {<<"Rooms">>, Rooms},
+	   {<<"Area">>, Area},
+	   {<<"Price">>, Price},
+	   {<<"City">>, DB_Name},
+	   {<<"Hyra">>, Hyra}],
+    data_base:create_doc(DB_Name,Doc),
+    push_to_dbb(DB_Name,T).
 
 
 %%     Rent = list_to_binary(integer_to_list(H#rental.rent)),

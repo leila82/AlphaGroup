@@ -50,47 +50,48 @@
                             <font size="4">SEARCH</font>
                             </p>
                                 <img alt="" src="images/1page_title1.gif" /></div>
-                            <form id="form2" method="POST" action="post_buy.yaws">
+                   <form id="form2" method="POST" action="post_buy.yaws">
                             <div class="container">
                                 <div class="column1">
                                     <div class="form1">
                                         <label>
-                                            City:</label><select name="city">
-                                            <option>&nbsp;All</option>
-                                             <option>&nbsp;Stockholm</option>
-                                             <option>&nbsp;Göteborg</option>
-                                                <option>&nbsp;Malmö</option>
+                                            City:</label><select name="City">
+                                             <option value=Stockholm>Stockholm</option>
+                                             <option value=Uppasala>Uppasala</option> 
+                                                <option value=Malmo>Malmö</option>
                                             </select></div>
                                     
                                             <div class="form1">
                                         <label>
-                                            Price:</label><select name="rent">
-                                           <option>&nbsp;Any</option>
-                                                <option>&nbsp;0 - 3,000 Kr</option>
-                                                <option>&nbsp;3,001 - 6,000 Kr</option>
-                                                <option>&nbsp;6,001 - 12,000 Kr</option>
-                                                <option>&nbsp;12,001 - Above </option>
+                                            Price:</label><select name="Price">
+                                           <option value=99999999>Any</option>
+                                                <option value=1000000>1,000,000 Kr</option>
+                                                <option value=2500000>2,500,000 Kr</option>
+                                                <option value=5000000>5,000,000 Kr</option>
                                             </select></div>
                                             <div class="form1">
                                         <label>
-                                            Room:</label><select name="rooms">
-                                           <option>&nbsp;Any</option>
-                                                <option>&nbsp;1 </option>
-                                                <option>&nbsp;2</option>
-                                                <option>&nbsp;4</option>
-                                                <option>&nbsp;5 +</option>
+                                            Room:</label><select name="Room">
+                                           <option value=9999>Any</option>
+                                                <option value=1>1 </option>
+                                                <option value=2>2</option>
+                                                <option value=3>3</option>
+                                                <option value=4>4</option>
                                             </select></div>
-                                               <div class="form1">
-                                        <label>
-                                            Area:</label><select class="area">
-                                           <option>&nbsp;Any</option>
-                                                <option>&nbsp;0 - 25M </option>
-                                                <option>&nbsp;26 - 50M</option>
-                                                <option>&nbsp;51 - 100M</option>
-                                                <option>&nbsp;100 - Above</option>
+
+					    <div class="form1">
+					      <label>
+						Hyra:</label><select  disabled name="Hyra">
+						<option value=999999>Any</option>
+                                                <option value=2000>2000 </option>
+                                                <option value=4000>4000</option>
+                                                <option value=6000>6000</option>
+                                                <option value=8000>8000</option>
                                             </select></div>
+                                            
                                    
                                     <div>
+        
                                     <br /><br /> &nbsp;&nbsp;&nbsp;
                                         <input class="input_2" type="image" src="images/form_but.gif" /></div>
                                 </div>
@@ -119,10 +120,10 @@
                                                                 <div class="inner">
                                                                 <p><font size="4">INFORMATION</font></p>
                                                                  <ol class="list1">
-                                                                        <li>Choose the city.</li><br />
-                                                                        <li class="bgd_enother">Choose the Price.</li><br />
-                                                                        <li>Choose the number of rooms.</li><br />
-                                                                        
+                                                                        <li>Choose the city.</li>
+                                                                        <li class="bgd_enother">Choose the Price.</li>
+                                                                        <li>Choose the number of rooms.</li>
+                                                                        <li class="bgd_enother">Choose the Area.</li>
                                                                         
                                                                     </ol>
                                                                 </div>
@@ -139,15 +140,11 @@
 					  <div class="clear"></div>
 					</div>
                 </div>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-                <p style="font-family: Verdana,arial,sans-serif; font-size: 10px;">
-                </p>
             </div>
             <!-- footer -->
             <div id="footer">
                 <p>
-                    Alpha Housing &copy; 2012 | <a href="index-6.html">Privacy Policy</a></p>
+                    Alpha Housing &copy; 2012</p>
             </div>
         </div>
     </div>
